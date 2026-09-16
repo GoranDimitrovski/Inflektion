@@ -37,6 +37,14 @@ jobs:
       run:
         working-directory: api
 
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: inflection_test
+      DB_USERNAME: inflection
+      DB_PASSWORD: inflection
+
     steps:
       - uses: actions/checkout@v4
 
@@ -63,6 +71,9 @@ jobs:
       - name: Generate application key
         run: php artisan key:generate
 
+      - name: Run migrations
+        run: php artisan migrate --force
+
       - name: Pint (style check)
         run: vendor/bin/pint --test
 
@@ -70,13 +81,6 @@ jobs:
         run: vendor/bin/phpstan analyse --memory-limit=512M
 
       - name: PHPUnit
-        env:
-          DB_CONNECTION: pgsql
-          DB_HOST: 127.0.0.1
-          DB_PORT: 5432
-          DB_DATABASE: inflection_test
-          DB_USERNAME: inflection
-          DB_PASSWORD: inflection
         run: php artisan test
 
       - name: Composer audit
