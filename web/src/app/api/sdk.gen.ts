@@ -20,14 +20,8 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 
 export const postbacksAccept = <ThrowOnError extends boolean = false>(options: Options<PostbacksAcceptData, ThrowOnError>): RequestResult<PostbacksAcceptResponses, PostbacksAcceptErrors, ThrowOnError> => (options.client ?? client).post<PostbacksAcceptResponses, PostbacksAcceptErrors, ThrowOnError>({ url: '/v1/postbacks/{vendor}', ...options });
 
-/**
- * Fetch zero to many `programs` resources
- */
 export const v1ProgramsIndex = <ThrowOnError extends boolean = false>(options?: Options<V1ProgramsIndexData, ThrowOnError>): RequestResult<V1ProgramsIndexResponses, unknown, ThrowOnError> => (options?.client ?? client).get<V1ProgramsIndexResponses, unknown, ThrowOnError>({ url: '/v1/programs', ...options });
 
-/**
- * Create a new `programs` resource
- */
 export const v1ProgramsStore = <ThrowOnError extends boolean = false>(options: Options<V1ProgramsStoreData, ThrowOnError>): RequestResult<V1ProgramsStoreResponses, unknown, ThrowOnError> => (options.client ?? client).post<V1ProgramsStoreResponses, unknown, ThrowOnError>({
     url: '/v1/programs',
     ...options,

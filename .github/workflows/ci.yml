@@ -92,6 +92,67 @@ jobs:
       - name: Fail if OpenAPI spec is out of date
         run: git diff --exit-code -- ../openapi.json
 
+  docker:
+    name: Docker images
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy environment files
+        run: |
+          cp .env.example .env
+          cp api/.env.example api/.env
+
+      - name: Build images
+        run: docker compose build
+
+      - name: Start Postgres and Redis
+        run: docker compose up -d postgres redis
+
+      - name: Install dependencies
+        run: |
+          docker compose run --rm app composer install --no-interaction --prefer-dist --no-progress
+          docker compose run --rm web sh -c "pnpm install --frozen-lockfile"
+
+      - name: Generate application key and migrate
+        run: |
+          docker compose run --rm app php artisan key:generate
+          docker compose run --rm app php artisan migrate --force
+
+      - name: Start the app and web containers
+        run: docker compose up -d app web
+
+      - name: Smoke test the API (read)
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8000/api/v1/programs && exit 0
+            sleep 2
+          done
+          echo "API never became ready" >&2
+          exit 1
+
+      - name: Smoke test the API (write)
+        run: |
+          curl -sf -X POST http://localhost:8000/api/v1/programs \
+            -H "Content-Type: application/vnd.api+json" \
+            -H "Accept: application/vnd.api+json" \
+            -d '{"data":{"type":"programs","attributes":{"name":"CI Smoke Test","slug":"ci-smoke-test"}}}'
+
+      - name: Smoke test the web dev server
+        run: |
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:4200/ && exit 0
+            sleep 2
+          done
+          echo "Web dev server never became ready" >&2
+          exit 1
+
+      - name: Show container logs on failure
+        if: failure()
+        run: docker compose logs
+
   web:
     name: Web (Angular 22)
     runs-on: ubuntu-latest

@@ -4,6 +4,16 @@ export type ClientOptions = {
     baseUrl: 'http://localhost:8000/api' | (string & {});
 };
 
+/**
+ * ConversionResource
+ */
+export type ConversionResource = {
+    id: number;
+    vendor: string;
+    external_id: string;
+    status: string;
+};
+
 export type PostbacksAcceptData = {
     body?: never;
     path: {
@@ -14,21 +24,31 @@ export type PostbacksAcceptData = {
 };
 
 export type PostbacksAcceptErrors = {
+    /**
+     * Validation error
+     */
     422: {
+        /**
+         * Errors overview.
+         */
         message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
     };
 };
 
 export type PostbacksAcceptError = PostbacksAcceptErrors[keyof PostbacksAcceptErrors];
 
 export type PostbacksAcceptResponses = {
+    /**
+     * `ConversionResource`
+     */
     202: {
-        data: {
-            id: number;
-            vendor: string;
-            external_id: string;
-            status: string;
-        };
+        data: ConversionResource;
     };
 };
 
@@ -50,6 +70,10 @@ export type V1ProgramsIndexResponses = {
                 name: string;
                 slug: string;
                 status: string;
+                commissionStrategy: string | null;
+                commissionRate: string | null;
+                commissionFlatAmountMinorUnits: number | null;
+                commissionFlatAmountCurrency: string | null;
                 createdAt: string;
                 updatedAt: string;
             };
@@ -92,6 +116,10 @@ export type V1ProgramsStoreData = {
                 name: string;
                 slug: string;
                 status?: string;
+                commissionStrategy?: string;
+                commissionRate?: string;
+                commissionFlatAmountMinorUnits?: number;
+                commissionFlatAmountCurrency?: string;
             };
         };
     };
@@ -109,6 +137,10 @@ export type V1ProgramsStoreResponses = {
                 name: string;
                 slug: string;
                 status: string;
+                commissionStrategy: string | null;
+                commissionRate: string | null;
+                commissionFlatAmountMinorUnits: number | null;
+                commissionFlatAmountCurrency: string | null;
                 createdAt: string;
                 updatedAt: string;
             };

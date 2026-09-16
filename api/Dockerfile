@@ -8,8 +8,11 @@ RUN apk add --no-cache \
         icu-libs \
         icu-dev \
         oniguruma-dev \
+        $PHPIZE_DEPS \
     && docker-php-ext-install pdo_pgsql pgsql intl mbstring bcmath opcache \
-    && apk del postgresql-dev icu-dev oniguruma-dev
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del postgresql-dev icu-dev oniguruma-dev $PHPIZE_DEPS
 
 COPY --from=composer:2.8.9 /usr/bin/composer /usr/bin/composer
 

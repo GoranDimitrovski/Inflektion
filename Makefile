@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := help
 .PHONY: help setup up down build install build-web test test-file phpstan pint pint-fix \
-        generate-client artisan shell-app shell-web ci serve serve-web queue-work schedule-work dev
+        generate-client check-openapi check-client audit web-test \
+        artisan shell-app shell-web ci serve serve-web queue-work schedule-work dev
 
 APP := docker compose run --rm app
 WEB := docker compose run --rm web sh -c
@@ -70,6 +71,20 @@ generate-client: ## Regenerate openapi.json and the Angular API client from it
 	$(APP) php artisan scramble:export --path=../openapi.json
 	$(WEB) "pnpm run generate:client"
 
+check-openapi: ## Fail if openapi.json is out of date (as CI does)
+	$(APP) php artisan scramble:export --path=../openapi.json
+	git diff --exit-code -- openapi.json
+
+check-client: ## Fail if the generated Angular API client is out of date (as CI does)
+	$(WEB) "pnpm run generate:client"
+	git diff --exit-code -- web/src/app/api
+
+audit: ## Run composer audit
+	$(APP) composer audit
+
+web-test: ## Run the Angular unit tests
+	$(WEB) "pnpm exec ng test --watch=false"
+
 artisan: ## Run an artisan command, e.g. make artisan CMD="migrate:fresh"
 	$(APP) php artisan $(CMD)
 
@@ -79,4 +94,4 @@ shell-app: ## Open a shell in the app container
 shell-web: ## Open a shell in the web container
 	docker compose run --rm web sh
 
-ci: pint phpstan test build-web ## Run the same checks CI runs
+ci: pint phpstan test audit check-openapi check-client build-web web-test ## Run the same checks CI runs

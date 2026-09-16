@@ -28,34 +28,14 @@
                 ],
                 "responses": {
                     "202": {
-                        "description": "",
+                        "description": "`ConversionResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "id": {
-                                                    "type": "integer"
-                                                },
-                                                "vendor": {
-                                                    "type": "string"
-                                                },
-                                                "external_id": {
-                                                    "type": "string"
-                                                },
-                                                "status": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "id",
-                                                "vendor",
-                                                "external_id",
-                                                "status"
-                                            ]
+                                            "$ref": "#/components/schemas/ConversionResource"
                                         }
                                     },
                                     "required": [
@@ -66,22 +46,7 @@
                         }
                     },
                     "422": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -89,7 +54,6 @@
         "/v1/programs": {
             "get": {
                 "operationId": "v1.programs.index",
-                "summary": "Fetch zero to many `programs` resources",
                 "tags": [
                     "Program"
                 ],
@@ -124,6 +88,30 @@
                                                             "status": {
                                                                 "type": "string"
                                                             },
+                                                            "commissionStrategy": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "commissionRate": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "commissionFlatAmountMinorUnits": {
+                                                                "type": [
+                                                                    "integer",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "commissionFlatAmountCurrency": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
                                                             "createdAt": {
                                                                 "type": "string"
                                                             },
@@ -135,6 +123,10 @@
                                                             "name",
                                                             "slug",
                                                             "status",
+                                                            "commissionStrategy",
+                                                            "commissionRate",
+                                                            "commissionFlatAmountMinorUnits",
+                                                            "commissionFlatAmountCurrency",
                                                             "createdAt",
                                                             "updatedAt"
                                                         ]
@@ -259,7 +251,6 @@
             },
             "post": {
                 "operationId": "v1.programs.store",
-                "summary": "Create a new `programs` resource",
                 "tags": [
                     "Program"
                 ],
@@ -287,6 +278,18 @@
                                                         "type": "string"
                                                     },
                                                     "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "commissionStrategy": {
+                                                        "type": "string"
+                                                    },
+                                                    "commissionRate": {
+                                                        "type": "string"
+                                                    },
+                                                    "commissionFlatAmountMinorUnits": {
+                                                        "type": "integer"
+                                                    },
+                                                    "commissionFlatAmountCurrency": {
                                                         "type": "string"
                                                     }
                                                 },
@@ -338,6 +341,30 @@
                                                         "status": {
                                                             "type": "string"
                                                         },
+                                                        "commissionStrategy": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "commissionRate": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "commissionFlatAmountMinorUnits": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "commissionFlatAmountCurrency": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ]
+                                                        },
                                                         "createdAt": {
                                                             "type": "string"
                                                         },
@@ -349,6 +376,10 @@
                                                         "name",
                                                         "slug",
                                                         "status",
+                                                        "commissionStrategy",
+                                                        "commissionRate",
+                                                        "commissionFlatAmountMinorUnits",
+                                                        "commissionFlatAmountCurrency",
                                                         "createdAt",
                                                         "updatedAt"
                                                     ]
@@ -390,6 +421,66 @@
                                     ]
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ConversionResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "vendor": {
+                        "type": "string"
+                    },
+                    "external_id": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "vendor",
+                    "external_id",
+                    "status"
+                ],
+                "title": "ConversionResource"
+            }
+        },
+        "responses": {
+            "ValidationException": {
+                "description": "Validation error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Errors overview."
+                                },
+                                "errors": {
+                                    "type": "object",
+                                    "description": "A detailed description of each field that failed validation.",
+                                    "additionalProperties": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            },
+                            "required": [
+                                "message",
+                                "errors"
+                            ]
                         }
                     }
                 }
