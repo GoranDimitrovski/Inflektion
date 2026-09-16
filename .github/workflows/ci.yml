@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API (PHP 8.4)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: inflection_test
+          POSTGRES_USER: inflection
+          POSTGRES_PASSWORD: inflection
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U inflection"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: api
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo_pgsql, pgsql, intl, mbstring, bcmath
+          coverage: none
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer/files
+          key: composer-${{ hashFiles('api/composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Pint (style check)
+        run: vendor/bin/pint --test
+
+      - name: PHPStan (Larastan, level 6)
+        run: vendor/bin/phpstan analyse --memory-limit=512M
+
+      - name: PHPUnit
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: inflection_test
+          DB_USERNAME: inflection
+          DB_PASSWORD: inflection
+        run: php artisan test
+
+      - name: Composer audit
+        run: composer audit
+
+      - name: Generate OpenAPI spec
+        run: php artisan scramble:export --path=../openapi.json
+
+      - name: Fail if OpenAPI spec is out of date
+        run: git diff --exit-code -- ../openapi.json
+
+  web:
+    name: Web (Angular 22)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: web
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # No version input: pnpm/action-setup reads the `packageManager`
+      # field in package.json as the single source of truth, per the
+      # project's toolchain-pin rule (a floating major has broken builds
+      # when a release shipped a bad self-installer).
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate API client
+        run: pnpm run generate:client
+
+      - name: Fail if generated client is out of date
+        run: git diff --exit-code -- src/app/api
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Unit tests
+        run: pnpm exec ng test --watch=false

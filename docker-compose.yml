@@ -1,0 +1,111 @@
+services:
+  app:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    volumes:
+      - ./api:/app
+      - ./openapi.json:/openapi.json
+    working_dir: /app
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-inflection}
+      DB_USERNAME: ${POSTGRES_USER:-inflection}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-inflection}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  queue:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    command: php artisan queue:work --tries=3 --sleep=1
+    volumes:
+      - ./api:/app
+    working_dir: /app
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-inflection}
+      DB_USERNAME: ${POSTGRES_USER:-inflection}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-inflection}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  scheduler:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    command: php artisan schedule:work
+    volumes:
+      - ./api:/app
+    working_dir: /app
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-inflection}
+      DB_USERNAME: ${POSTGRES_USER:-inflection}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-inflection}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-inflection}
+      POSTGRES_USER: ${POSTGRES_USER:-inflection}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-inflection}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-inflection}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - ./web:/app
+      - ./openapi.json:/openapi.json
+    ports:
+      - "${WEB_PORT:-4200}:4200"
+
+volumes:
+  pgdata:

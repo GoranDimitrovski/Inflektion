@@ -1,0 +1,45 @@
+<section>
+  <h1>Programs</h1>
+
+  @if (facade.loading()) {
+    <p>Loading…</p>
+  }
+
+  @if (facade.error()) {
+    <p class="error">{{ facade.error() }}</p>
+  }
+
+  <ul>
+    @for (program of facade.programs(); track program.id) {
+      <li>
+        <strong>{{ program.attributes.name }}</strong>
+        <span class="slug">{{ program.attributes.slug }}</span>
+        <span class="status">{{ program.attributes.status }}</span>
+      </li>
+    } @empty {
+      <li>No programs yet.</li>
+    }
+  </ul>
+
+  <form (submit)="$event.preventDefault(); onSubmit()">
+    <h2>New program</h2>
+
+    <label>
+      Name
+      <input type="text" [formField]="createForm.name" />
+    </label>
+    @if (createForm.name().errors().length > 0) {
+      <p class="field-error">{{ createForm.name().errors()[0].message }}</p>
+    }
+
+    <label>
+      Slug
+      <input type="text" [formField]="createForm.slug" />
+    </label>
+    @if (createForm.slug().errors().length > 0) {
+      <p class="field-error">{{ createForm.slug().errors()[0].message }}</p>
+    }
+
+    <button type="submit" [disabled]="submitting()">Create</button>
+  </form>
+</section>
