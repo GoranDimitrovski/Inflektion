@@ -97,8 +97,11 @@ jobs:
       # No version input: pnpm/action-setup reads the `packageManager`
       # field in package.json as the single source of truth, per the
       # project's toolchain-pin rule (a floating major has broken builds
-      # when a release shipped a bad self-installer).
+      # when a release shipped a bad self-installer). package_json_file
+      # points it at web/package.json since the repo root has none.
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: web/package.json
 
       - uses: actions/setup-node@v4
         with:
