@@ -15,9 +15,6 @@ return new class extends Migration
             $table->foreignId('account_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('actor_user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('action');
-            // Polymorphic subject reference, deliberately without a foreign
-            // key: an audit entry must survive its subject being deleted
-            // (e.g. a revoked membership), never be cascade-deleted with it.
             $table->string('subject_type')->nullable();
             $table->unsignedBigInteger('subject_id')->nullable();
             $table->json('metadata');

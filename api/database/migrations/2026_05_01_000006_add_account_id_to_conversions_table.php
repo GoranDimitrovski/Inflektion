@@ -11,10 +11,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('conversions', function (Blueprint $table): void {
-            // Nullable: a conversion arrives via postback before attribution
-            // succeeds, so it starts genuinely unowned. AttributeConversion
-            // sets this alongside attributed_program_id — until then, the
-            // tenant scope correctly hides it from every account.
             $table->foreignId('account_id')->nullable()->after('id')->constrained()->nullOnDelete();
         });
     }

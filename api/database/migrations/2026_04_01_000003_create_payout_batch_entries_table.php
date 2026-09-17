@@ -10,9 +10,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Insert-only join table: a batch claims ledger entries by adding rows
-        // here, never by updating the ledger. The unique constraint also
-        // enforces "an entry belongs to at most one batch" at the DB level.
         Schema::create('payout_batch_entries', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('payout_batch_id')->constrained();

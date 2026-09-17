@@ -162,167 +162,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    },
-                                                    "id": {
-                                                        "type": "string"
-                                                    },
-                                                    "attributes": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "name": {
-                                                                "type": "string"
-                                                            },
-                                                            "abilities": {
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "lastUsedAt": {
-                                                                "type": [
-                                                                    "string",
-                                                                    "null"
-                                                                ]
-                                                            },
-                                                            "expiresAt": {
-                                                                "type": [
-                                                                    "string",
-                                                                    "null"
-                                                                ]
-                                                            },
-                                                            "createdAt": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "name",
-                                                            "abilities",
-                                                            "lastUsedAt",
-                                                            "expiresAt",
-                                                            "createdAt"
-                                                        ]
-                                                    },
-                                                    "links": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "self": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "self"
-                                                        ]
-                                                    }
-                                                },
-                                                "required": [
-                                                    "type",
-                                                    "id",
-                                                    "attributes",
-                                                    "links"
-                                                ]
-                                            }
-                                        },
-                                        "links": {
-                                            "type": "object",
-                                            "properties": {
-                                                "first": {
-                                                    "type": "string"
-                                                },
-                                                "last": {
-                                                    "type": "string"
-                                                },
-                                                "prev": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ]
-                                                },
-                                                "next": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "first",
-                                                "last",
-                                                "prev",
-                                                "next"
-                                            ]
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "properties": {
-                                                "page": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "currentPage": {
-                                                            "type": "integer"
-                                                        },
-                                                        "from": {
-                                                            "type": [
-                                                                "integer",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "lastPage": {
-                                                            "type": "integer"
-                                                        },
-                                                        "perPage": {
-                                                            "type": "integer"
-                                                        },
-                                                        "to": {
-                                                            "type": [
-                                                                "integer",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "total": {
-                                                            "type": "integer"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "currentPage",
-                                                        "from",
-                                                        "lastPage",
-                                                        "perPage",
-                                                        "to",
-                                                        "total"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "page"
-                                            ]
-                                        },
-                                        "jsonapi": {
-                                            "type": "object",
-                                            "properties": {
-                                                "version": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "version"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "data",
-                                        "links",
-                                        "meta",
-                                        "jsonapi"
-                                    ]
+                                    "type": "object"
                                 }
                             }
                         }
@@ -334,7 +174,6 @@
             },
             "post": {
                 "operationId": "v1.api-tokens.store",
-                "summary": "The plaintext token is only ever available here, in `meta` \u2014 it's\nnever persisted anywhere and never appears in a later response",
                 "tags": [
                     "ApiToken"
                 ],
@@ -403,100 +242,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "type": {
-                                                    "type": "string"
-                                                },
-                                                "id": {
-                                                    "type": "string"
-                                                },
-                                                "attributes": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "name": {
-                                                            "type": "string"
-                                                        },
-                                                        "abilities": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "lastUsedAt": {
-                                                            "type": [
-                                                                "string",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "expiresAt": {
-                                                            "type": [
-                                                                "string",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "createdAt": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "name",
-                                                        "abilities",
-                                                        "lastUsedAt",
-                                                        "expiresAt",
-                                                        "createdAt"
-                                                    ]
-                                                },
-                                                "links": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "self": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "self"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "type",
-                                                "id",
-                                                "attributes",
-                                                "links"
-                                            ]
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "properties": {
-                                                "plainTextToken": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "plainTextToken"
-                                            ]
-                                        },
-                                        "jsonapi": {
-                                            "type": "object",
-                                            "properties": {
-                                                "version": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "version"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "data",
-                                        "meta",
-                                        "jsonapi"
-                                    ]
+                                    "type": "object"
                                 }
                             }
                         }
@@ -542,6 +288,22 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/confirmed-two-factor-authentication": {
+            "post": {
+                "operationId": "two-factor.confirm",
+                "tags": [
+                    "ConfirmedTwoFactorAuthentication"
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -597,158 +359,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    },
-                                                    "id": {
-                                                        "type": "string"
-                                                    },
-                                                    "attributes": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "email": {
-                                                                "type": "string"
-                                                            },
-                                                            "role": {
-                                                                "type": "string"
-                                                            },
-                                                            "status": {
-                                                                "type": "string"
-                                                            },
-                                                            "expiresAt": {
-                                                                "type": "string"
-                                                            },
-                                                            "createdAt": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "email",
-                                                            "role",
-                                                            "status",
-                                                            "expiresAt",
-                                                            "createdAt"
-                                                        ]
-                                                    },
-                                                    "links": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "self": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "self"
-                                                        ]
-                                                    }
-                                                },
-                                                "required": [
-                                                    "type",
-                                                    "id",
-                                                    "attributes",
-                                                    "links"
-                                                ]
-                                            }
-                                        },
-                                        "links": {
-                                            "type": "object",
-                                            "properties": {
-                                                "first": {
-                                                    "type": "string"
-                                                },
-                                                "last": {
-                                                    "type": "string"
-                                                },
-                                                "prev": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ]
-                                                },
-                                                "next": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "first",
-                                                "last",
-                                                "prev",
-                                                "next"
-                                            ]
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "properties": {
-                                                "page": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "currentPage": {
-                                                            "type": "integer"
-                                                        },
-                                                        "from": {
-                                                            "type": [
-                                                                "integer",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "lastPage": {
-                                                            "type": "integer"
-                                                        },
-                                                        "perPage": {
-                                                            "type": "integer"
-                                                        },
-                                                        "to": {
-                                                            "type": [
-                                                                "integer",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "total": {
-                                                            "type": "integer"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "currentPage",
-                                                        "from",
-                                                        "lastPage",
-                                                        "perPage",
-                                                        "to",
-                                                        "total"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "page"
-                                            ]
-                                        },
-                                        "jsonapi": {
-                                            "type": "object",
-                                            "properties": {
-                                                "version": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "version"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "data",
-                                        "links",
-                                        "meta",
-                                        "jsonapi"
-                                    ]
+                                    "type": "object"
                                 }
                             }
                         }
@@ -822,79 +433,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "type": {
-                                                    "type": "string"
-                                                },
-                                                "id": {
-                                                    "type": "string"
-                                                },
-                                                "attributes": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "email": {
-                                                            "type": "string"
-                                                        },
-                                                        "role": {
-                                                            "type": "string"
-                                                        },
-                                                        "status": {
-                                                            "type": "string"
-                                                        },
-                                                        "expiresAt": {
-                                                            "type": "string"
-                                                        },
-                                                        "createdAt": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "email",
-                                                        "role",
-                                                        "status",
-                                                        "expiresAt",
-                                                        "createdAt"
-                                                    ]
-                                                },
-                                                "links": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "self": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "self"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "type",
-                                                "id",
-                                                "attributes",
-                                                "links"
-                                            ]
-                                        },
-                                        "jsonapi": {
-                                            "type": "object",
-                                            "properties": {
-                                                "version": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "version"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "data",
-                                        "jsonapi"
-                                    ]
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1070,6 +609,32 @@
                     "204": {
                         "description": "No content"
                     },
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "twoFactorRequired": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "twoFactorRequired"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
                     }
@@ -1120,12 +685,16 @@
                                                         },
                                                         "email": {
                                                             "type": "string"
+                                                        },
+                                                        "twoFactorEnabled": {
+                                                            "type": "boolean"
                                                         }
                                                     },
                                                     "required": [
                                                         "id",
                                                         "name",
-                                                        "email"
+                                                        "email",
+                                                        "twoFactorEnabled"
                                                     ]
                                                 },
                                                 "memberships": {
@@ -1160,12 +729,16 @@
                                                                 "items": {
                                                                     "type": "string"
                                                                 }
+                                                            },
+                                                            "twoFactorRequired": {
+                                                                "type": "boolean"
                                                             }
                                                         },
                                                         "required": [
                                                             "account",
                                                             "role",
-                                                            "permissions"
+                                                            "permissions",
+                                                            "twoFactorRequired"
                                                         ]
                                                     }
                                                 }
@@ -1211,158 +784,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    },
-                                                    "id": {
-                                                        "type": "string"
-                                                    },
-                                                    "attributes": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "userId": {
-                                                                "type": "integer"
-                                                            },
-                                                            "userName": {
-                                                                "type": "string"
-                                                            },
-                                                            "userEmail": {
-                                                                "type": "string"
-                                                            },
-                                                            "role": {
-                                                                "type": "string"
-                                                            },
-                                                            "createdAt": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "userId",
-                                                            "userName",
-                                                            "userEmail",
-                                                            "role",
-                                                            "createdAt"
-                                                        ]
-                                                    },
-                                                    "links": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "self": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "self"
-                                                        ]
-                                                    }
-                                                },
-                                                "required": [
-                                                    "type",
-                                                    "id",
-                                                    "attributes",
-                                                    "links"
-                                                ]
-                                            }
-                                        },
-                                        "links": {
-                                            "type": "object",
-                                            "properties": {
-                                                "first": {
-                                                    "type": "string"
-                                                },
-                                                "last": {
-                                                    "type": "string"
-                                                },
-                                                "prev": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ]
-                                                },
-                                                "next": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "first",
-                                                "last",
-                                                "prev",
-                                                "next"
-                                            ]
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "properties": {
-                                                "page": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "currentPage": {
-                                                            "type": "integer"
-                                                        },
-                                                        "from": {
-                                                            "type": [
-                                                                "integer",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "lastPage": {
-                                                            "type": "integer"
-                                                        },
-                                                        "perPage": {
-                                                            "type": "integer"
-                                                        },
-                                                        "to": {
-                                                            "type": [
-                                                                "integer",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "total": {
-                                                            "type": "integer"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "currentPage",
-                                                        "from",
-                                                        "lastPage",
-                                                        "perPage",
-                                                        "to",
-                                                        "total"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "page"
-                                            ]
-                                        },
-                                        "jsonapi": {
-                                            "type": "object",
-                                            "properties": {
-                                                "version": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "version"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "data",
-                                        "links",
-                                        "meta",
-                                        "jsonapi"
-                                    ]
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1446,79 +868,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "type": {
-                                                    "type": "string"
-                                                },
-                                                "id": {
-                                                    "type": "string"
-                                                },
-                                                "attributes": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "userId": {
-                                                            "type": "integer"
-                                                        },
-                                                        "userName": {
-                                                            "type": "string"
-                                                        },
-                                                        "userEmail": {
-                                                            "type": "string"
-                                                        },
-                                                        "role": {
-                                                            "type": "string"
-                                                        },
-                                                        "createdAt": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "userId",
-                                                        "userName",
-                                                        "userEmail",
-                                                        "role",
-                                                        "createdAt"
-                                                    ]
-                                                },
-                                                "links": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "self": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "self"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "type",
-                                                "id",
-                                                "attributes",
-                                                "links"
-                                            ]
-                                        },
-                                        "jsonapi": {
-                                            "type": "object",
-                                            "properties": {
-                                                "version": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "version"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "data",
-                                        "jsonapi"
-                                    ]
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1632,186 +982,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "type": {
-                                                        "type": "string"
-                                                    },
-                                                    "id": {
-                                                        "type": "string"
-                                                    },
-                                                    "attributes": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "name": {
-                                                                "type": "string"
-                                                            },
-                                                            "slug": {
-                                                                "type": "string"
-                                                            },
-                                                            "status": {
-                                                                "type": "string"
-                                                            },
-                                                            "commissionStrategy": {
-                                                                "type": [
-                                                                    "string",
-                                                                    "null"
-                                                                ]
-                                                            },
-                                                            "commissionRate": {
-                                                                "type": [
-                                                                    "string",
-                                                                    "null"
-                                                                ]
-                                                            },
-                                                            "commissionFlatAmountMinorUnits": {
-                                                                "type": [
-                                                                    "integer",
-                                                                    "null"
-                                                                ]
-                                                            },
-                                                            "commissionFlatAmountCurrency": {
-                                                                "type": [
-                                                                    "string",
-                                                                    "null"
-                                                                ]
-                                                            },
-                                                            "createdAt": {
-                                                                "type": "string"
-                                                            },
-                                                            "updatedAt": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "name",
-                                                            "slug",
-                                                            "status",
-                                                            "commissionStrategy",
-                                                            "commissionRate",
-                                                            "commissionFlatAmountMinorUnits",
-                                                            "commissionFlatAmountCurrency",
-                                                            "createdAt",
-                                                            "updatedAt"
-                                                        ]
-                                                    },
-                                                    "links": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "self": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "self"
-                                                        ]
-                                                    }
-                                                },
-                                                "required": [
-                                                    "type",
-                                                    "id",
-                                                    "attributes",
-                                                    "links"
-                                                ]
-                                            }
-                                        },
-                                        "links": {
-                                            "type": "object",
-                                            "properties": {
-                                                "first": {
-                                                    "type": "string"
-                                                },
-                                                "last": {
-                                                    "type": "string"
-                                                },
-                                                "prev": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ]
-                                                },
-                                                "next": {
-                                                    "type": [
-                                                        "string",
-                                                        "null"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "first",
-                                                "last",
-                                                "prev",
-                                                "next"
-                                            ]
-                                        },
-                                        "meta": {
-                                            "type": "object",
-                                            "properties": {
-                                                "page": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "currentPage": {
-                                                            "type": "integer"
-                                                        },
-                                                        "from": {
-                                                            "type": [
-                                                                "integer",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "lastPage": {
-                                                            "type": "integer"
-                                                        },
-                                                        "perPage": {
-                                                            "type": "integer"
-                                                        },
-                                                        "to": {
-                                                            "type": [
-                                                                "integer",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "total": {
-                                                            "type": "integer"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "currentPage",
-                                                        "from",
-                                                        "lastPage",
-                                                        "perPage",
-                                                        "to",
-                                                        "total"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "page"
-                                            ]
-                                        },
-                                        "jsonapi": {
-                                            "type": "object",
-                                            "properties": {
-                                                "version": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "version"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "data",
-                                        "links",
-                                        "meta",
-                                        "jsonapi"
-                                    ]
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1900,107 +1071,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "type": {
-                                                    "type": "string"
-                                                },
-                                                "id": {
-                                                    "type": "string"
-                                                },
-                                                "attributes": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "name": {
-                                                            "type": "string"
-                                                        },
-                                                        "slug": {
-                                                            "type": "string"
-                                                        },
-                                                        "status": {
-                                                            "type": "string"
-                                                        },
-                                                        "commissionStrategy": {
-                                                            "type": [
-                                                                "string",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "commissionRate": {
-                                                            "type": [
-                                                                "string",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "commissionFlatAmountMinorUnits": {
-                                                            "type": [
-                                                                "integer",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "commissionFlatAmountCurrency": {
-                                                            "type": [
-                                                                "string",
-                                                                "null"
-                                                            ]
-                                                        },
-                                                        "createdAt": {
-                                                            "type": "string"
-                                                        },
-                                                        "updatedAt": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "name",
-                                                        "slug",
-                                                        "status",
-                                                        "commissionStrategy",
-                                                        "commissionRate",
-                                                        "commissionFlatAmountMinorUnits",
-                                                        "commissionFlatAmountCurrency",
-                                                        "createdAt",
-                                                        "updatedAt"
-                                                    ]
-                                                },
-                                                "links": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "self": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "self"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "type",
-                                                "id",
-                                                "attributes",
-                                                "links"
-                                            ]
-                                        },
-                                        "jsonapi": {
-                                            "type": "object",
-                                            "properties": {
-                                                "version": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "version"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "data",
-                                        "jsonapi"
-                                    ]
+                                    "type": "object"
                                 }
                             }
                         }
@@ -2036,13 +1107,235 @@
                     }
                 }
             }
+        },
+        "/two-factor-authentication": {
+            "post": {
+                "operationId": "two-factor.enable",
+                "tags": [
+                    "TwoFactorAuthentication"
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "two-factor.disable",
+                "tags": [
+                    "TwoFactorAuthentication"
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/two-factor-challenge": {
+            "post": {
+                "operationId": "two-factor.challenge",
+                "tags": [
+                    "TwoFactorChallenge"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TwoFactorLoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/two-factor-qr-code": {
+            "get": {
+                "operationId": "two-factor.qr-code",
+                "tags": [
+                    "TwoFactorQrCode"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "svg": {
+                                                    "type": "string"
+                                                },
+                                                "url": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "svg",
+                                                "url"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/two-factor-recovery-codes": {
+            "get": {
+                "operationId": "two-factor.recovery-codes.index",
+                "tags": [
+                    "TwoFactorRecoveryCodes"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {}
+                                                }
+                                            },
+                                            "required": [
+                                                "data"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "minItems": 0,
+                                                    "maxItems": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "data"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "two-factor.recovery-codes.store",
+                "tags": [
+                    "TwoFactorRecoveryCodes"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/two-factor-secret-key": {
+            "get": {
+                "operationId": "two-factor.secret-key",
+                "tags": [
+                    "TwoFactorSecretKey"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "secretKey": {}
+                                            },
+                                            "required": [
+                                                "secretKey"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
             "AcceptInvitationRequest": {
                 "type": "object",
-                "description": "`name`/`password` are only required when the invited email has no\nexisting User yet \u2014 AcceptInvitationController decides that (it needs a\nDB lookup the request itself shouldn't own) and enforces it explicitly.",
                 "properties": {
                     "name": {
                         "type": "string",
@@ -2139,6 +1432,24 @@
                     "password_confirmation"
                 ],
                 "title": "ResetPasswordRequest"
+            },
+            "TwoFactorLoginRequest": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "recovery_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "title": "TwoFactorLoginRequest"
             }
         },
         "responses": {
@@ -2174,6 +1485,25 @@
             },
             "AuthenticationException": {
                 "description": "Unauthenticated",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            },
+            "ModelNotFoundException": {
+                "description": "Not found",
                 "content": {
                     "application/json": {
                         "schema": {

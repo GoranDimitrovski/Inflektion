@@ -22,18 +22,6 @@ use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
-/**
- * The single highest-value test in the suite: every tenant-owned model's
- * global scope must actually hide other accounts' rows. Parameterized over
- * a model list rather than one hardcoded assertion, so this fails loudly
- * the day a second tenant-owned model is added without being included.
- *
- * This checks the scope directly (set TenantContext, query, assert) rather
- * than going through HTTP, since it's meant to generalize across models
- * whose routes may not all look alike. The concrete HTTP-layer contract
- * for Program specifically (404 for non-members, empty list across
- * accounts) is covered in ProgramsTest.
- */
 final class TenantIsolationTest extends TestCase
 {
     use RefreshDatabase;
@@ -112,9 +100,6 @@ final class TenantIsolationTest extends TestCase
         $accountB = Account::factory()->create();
 
         foreach ($this->tenantOwnedModels() as $modelClass => $seed) {
-            // A previous iteration's TenantContext must not leak into this
-            // one's seed data creation (it would scope the factories' own
-            // internal lookups to the wrong account).
             $this->app->forgetInstance(TenantContext::class);
 
             $seed($accountA);

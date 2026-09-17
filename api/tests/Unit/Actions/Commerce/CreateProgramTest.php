@@ -31,7 +31,6 @@ final class CreateProgramTest extends TestCase
 
         $action->handle($data, $actor);
 
-        // Bypasses ProgramRequest's Rule::unique() pre-check entirely.
         $this->expectException(UniqueConstraintViolationException::class);
 
         try {

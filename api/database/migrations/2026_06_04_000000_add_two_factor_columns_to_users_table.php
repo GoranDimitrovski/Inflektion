@@ -6,8 +6,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-// Same shape as Laravel Fortify's own published migration
-// (vendor/laravel/fortify/database/migrations/..._add_two_factor_columns_to_users_table.php).
 return new class extends Migration
 {
     public function up(): void

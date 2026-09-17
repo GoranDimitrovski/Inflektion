@@ -89,22 +89,6 @@ final class TwoFactorLoginTest extends TestCase
         $response->assertUnprocessable();
     }
 
-    /**
-     * Set up entirely through the Action layer plus a direct forceFill, not
-     * HTTP or Fortify's own ConfirmTwoFactorAuthentication action — this
-     * test is about the login/challenge flow, not enable/confirm (covered
-     * in TwoFactorAuthenticationTest). Going through the real confirm
-     * action here would verify a code and cache it against replay for the
-     * rest of that TOTP time-step (Google2FA's own anti-replay protection),
-     * and since this setup and the test's own first challenge attempt both
-     * run within the same time-step, the challenge's code would collide
-     * with the one already spent confirming — a real "code reused" rejection,
-     * not a bug in the login flow being tested. A prior real login+logout
-     * cycle just to reach this precondition would separately entangle this
-     * test's own session with that setup's, which is exactly what
-     * LogoutTest's own comment already flags as unreliable to assert
-     * against.
-     */
     private function createUserWithConfirmedTwoFactor(): User
     {
         $user = User::factory()->create(['password' => Hash::make('correct-password')]);

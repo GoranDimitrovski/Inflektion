@@ -86,11 +86,6 @@ final class AcceptInvitationTest extends TestCase
 
         $first = app(AcceptInvitation::class)->handle($invitation, $user);
 
-        // Simulate a double-submitted accept: the invitation is already
-        // accepted (so the isPending() guard alone would already catch this
-        // on a fresh instance), so re-run against a still-pending in-memory
-        // copy to exercise the UniqueConstraintViolationException path
-        // specifically.
         $invitation->status = Invitation::STATUS_PENDING;
         $second = app(AcceptInvitation::class)->handle($invitation, $user);
 

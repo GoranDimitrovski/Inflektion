@@ -31,7 +31,6 @@ final class WeightedVariantStrategyTest extends TestCase
             $seen[$variant->key] = true;
         }
 
-        // Weighted, not fixed: across 50 rolls we should see more than one bucket.
         $this->assertGreaterThan(1, count($seen));
     }
 }

@@ -16,13 +16,6 @@ final class LogoutTest extends TestCase
     #[Test]
     public function itLogsOutTheAuthenticatedUser(): void
     {
-        // A full cookie round trip (real /login, reuse its Set-Cookie,
-        // real /logout, assert a follow-up /me is 401) is covered by
-        // manual verification against the running app; actingAs() short-
-        // circuits Sanctum's session bootstrapping in a way that makes a
-        // same-request "am I still logged in" assertion unreliable here.
-        // The response contract — an authenticated caller gets 204 — is
-        // what this asserts.
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->deleteJson('/api/logout', [], ['Origin' => 'http://localhost:4200']);

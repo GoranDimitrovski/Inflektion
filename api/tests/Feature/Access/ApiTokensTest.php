@@ -50,7 +50,6 @@ final class ApiTokensTest extends TestCase
         $account = $this->actingAsAccountMember(role: Role::Owner);
         $me = Membership::query()->where('account_id', $account->id)->firstOrFail()->user;
 
-        // Someone else's token on the same account must not appear.
         $other = User::factory()->create();
         Membership::factory()->create(['account_id' => $account->id, 'user_id' => $other->id, 'role' => Role::Owner]);
         $this->issueToken($account, $other, Role::Owner, ['programs.read']);
@@ -97,10 +96,6 @@ final class ApiTokensTest extends TestCase
             'Accept' => self::JSON_API_MEDIA_TYPE,
         ]);
 
-        // Not just refused: another member's token isn't even visible to
-        // this caller — the model's own "own tokens only" scope (see
-        // App\Access\ApiToken) means it never resolves at all, the same
-        // "unauthorized is a 404" convention used across this app.
         $response->assertNotFound();
         $this->assertDatabaseHas('personal_access_tokens', ['id' => $ownerToken->accessToken->id]);
     }

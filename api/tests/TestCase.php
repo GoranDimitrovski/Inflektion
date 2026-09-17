@@ -10,11 +10,6 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    /**
-     * Creates and authenticates a user with a Membership on a (new, by
-     * default) account, and returns that account so tests can build
-     * account-scoped URLs and seed account-owned rows.
-     */
     protected function actingAsAccountMember(?Account $account = null, Role $role = Role::Member): Account
     {
         $account ??= Account::factory()->create();

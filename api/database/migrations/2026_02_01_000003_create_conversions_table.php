@@ -21,9 +21,6 @@ return new class extends Migration
             $table->foreignId('attributed_program_id')->nullable()->constrained('programs')->nullOnDelete();
             $table->timestamps();
 
-            // This unique constraint — not an application-level check — is what
-            // makes postback acceptance idempotent (project rule #2: every
-            // externally triggered write is idempotent via a DB constraint).
             $table->unique(['vendor', 'external_id']);
         });
     }

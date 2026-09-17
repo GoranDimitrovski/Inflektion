@@ -26,9 +26,6 @@ final class MeTest extends TestCase
         $response->assertOk();
         $response->assertJsonPath('data.memberships.0.account.id', $account->id);
         $response->assertJsonPath('data.memberships.0.role', 'viewer');
-        // A viewer gets programs.read but never programs.write — this
-        // must come from PermissionMap, never be derived from the role
-        // name client-side.
         $response->assertJsonPath('data.memberships.0.permissions', ['programs.read']);
         $response->assertJsonPath('data.memberships.0.twoFactorRequired', false);
         $response->assertJsonPath('data.user.twoFactorEnabled', false);
