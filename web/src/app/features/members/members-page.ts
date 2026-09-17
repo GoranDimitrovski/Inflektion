@@ -4,6 +4,7 @@ import { FormField, form, required, submit } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { accountsLeave } from '../../api/sdk.gen';
 import { DataTable } from '../../shared/data-table';
+import { Modal } from '../../shared/modal';
 import { SessionService } from '../../core/session';
 import { InvitationResource, MembersFacade, MembershipResource } from './members.facade';
 
@@ -16,7 +17,7 @@ const ROLES = ['owner', 'admin', 'member', 'viewer'];
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DataTable, DatePipe, FormField],
+  imports: [DataTable, DatePipe, FormField, Modal],
   providers: [MembersFacade],
   selector: 'app-members-page',
   styleUrl: './members-page.scss',
@@ -30,6 +31,7 @@ export class MembersPage implements OnInit {
   protected readonly roles = ROLES;
   protected readonly tab = signal<'members' | 'invitations'>('members');
   protected readonly confirmingRemovalOf = signal<string | null>(null);
+  protected readonly showInviteModal = signal(false);
 
   protected readonly inviteModel = signal<InviteModel>({ email: '', role: 'member' });
   protected readonly inviteForm = form(this.inviteModel, (path) => {
@@ -93,6 +95,7 @@ export class MembersPage implements OnInit {
         this.inviteError.set(error);
       } else {
         this.inviteModel.set({ email: '', role: 'member' });
+        this.showInviteModal.set(false);
       }
     });
 

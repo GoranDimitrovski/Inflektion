@@ -1,0 +1,150 @@
+<section>
+  <h1>Settings</h1>
+
+  <nav class="tabs">
+    <button type="button" [class.active]="tab() === 'security'" (click)="tab.set('security')">Security</button>
+    <button type="button" [class.active]="tab() === 'tokens'" (click)="tab.set('tokens')">API tokens</button>
+  </nav>
+
+  @if (tab() === 'security') {
+    <h2>Two-factor authentication</h2>
+
+    @if (facade.twoFactorError()) {
+      <p class="error">{{ facade.twoFactorError() }}</p>
+    }
+    @if (disableError()) {
+      <p class="error">{{ disableError() }}</p>
+    }
+
+    @if (enrolling()) {
+      <div class="callout">
+        <p>Scan this QR code with your authenticator app, or enter the key manually.</p>
+
+        @if (qrCodeDataUri(); as src) {
+          <img [src]="src" width="200" height="200" alt="Two-factor authentication QR code" />
+        }
+        @if (facade.secretKey(); as secretKey) {
+          <p><code>{{ secretKey }}</code></p>
+        }
+      </div>
+
+      <form (submit)="$event.preventDefault(); onConfirmEnrollment()">
+        <label>
+          Code from your authenticator app
+          <input type="text" autocomplete="one-time-code" [formField]="challengeForm.code" />
+        </label>
+        @if (challengeForm.code().errors().length > 0) {
+          <p class="field-error">{{ challengeForm.code().errors()[0].message }}</p>
+        }
+
+        <button type="submit" [disabled]="confirming()">Confirm</button>
+        <button type="button" class="secondary" (click)="enrolling.set(false)">Cancel</button>
+      </form>
+    } @else if (session.user()?.twoFactorEnabled) {
+      <p>Two-factor authentication is enabled on your account.</p>
+
+      @if (facade.recoveryCodes().length > 0) {
+        <p>
+          Recovery codes — each can be used once to log in if you lose access to your authenticator app. Store them
+          somewhere safe.
+        </p>
+        <div class="recovery-codes">
+          @for (code of facade.recoveryCodes(); track code) {
+            <span>{{ code }}</span>
+          }
+        </div>
+        <button type="button" class="secondary" (click)="facade.regenerateRecoveryCodes()">Regenerate codes</button>
+      } @else {
+        <button type="button" class="secondary" (click)="facade.viewRecoveryCodes()">View recovery codes</button>
+      }
+
+      <p>
+        <button type="button" class="danger" (click)="onDisable()">Disable two-factor authentication</button>
+      </p>
+    } @else {
+      <p>Add an extra layer of security to your account with an authenticator app.</p>
+      <button type="button" [disabled]="enrolling()" (click)="onStartEnrollment()">
+        Enable two-factor authentication
+      </button>
+    }
+  } @else {
+    <div class="page-header">
+      <h2>API tokens</h2>
+      <button type="button" (click)="showCreateTokenModal.set(true)">Create token</button>
+    </div>
+
+    @if (justCreatedToken(); as created) {
+      <div class="callout">
+        <p>
+          Copy this token now — it won't be shown again:
+        </p>
+        <p><code>{{ created.plainTextToken }}</code></p>
+        <button type="button" class="secondary" (click)="justCreatedToken.set(null)">Done</button>
+      </div>
+    }
+
+    <app-data-table
+      [loading]="facade.loadingTokens()"
+      [error]="facade.tokensError()"
+      [empty]="facade.apiTokens().length === 0"
+      emptyMessage="No API tokens yet."
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Abilities</th>
+            <th>Last used</th>
+            <th>Expires</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (token of facade.apiTokens(); track token.id) {
+            <tr>
+              <td>{{ token.attributes.name }}</td>
+              <td>{{ token.attributes.abilities.join(', ') }}</td>
+              <td>{{ token.attributes.lastUsedAt ? (token.attributes.lastUsedAt | date: 'medium') : 'Never' }}</td>
+              <td>{{ token.attributes.expiresAt ? (token.attributes.expiresAt | date: 'medium') : 'Never' }}</td>
+              <td>
+                <button type="button" class="danger" (click)="onRevokeToken(token)">Revoke</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </app-data-table>
+  }
+</section>
+
+<app-modal [open]="showCreateTokenModal()" title="Create a token" (closed)="showCreateTokenModal.set(false)">
+  <form (submit)="$event.preventDefault(); onCreateToken()">
+    @if (tokenCreateError()) {
+      <p class="error">{{ tokenCreateError() }}</p>
+    }
+
+    <label>
+      Name
+      <input type="text" [formField]="tokenForm.name" placeholder="e.g. CI pipeline" />
+    </label>
+    @if (tokenForm.name().errors().length > 0) {
+      <p class="field-error">{{ tokenForm.name().errors()[0].message }}</p>
+    }
+
+    <fieldset class="abilities">
+      <legend>Abilities</legend>
+      @for (ability of availableAbilities(); track ability) {
+        <label>
+          <input
+            type="checkbox"
+            [checked]="selectedAbilities()[ability]"
+            (change)="toggleAbility(ability, $any($event.target).checked)"
+          />
+          {{ ability }}
+        </label>
+      }
+    </fieldset>
+
+    <button type="submit" [disabled]="creatingToken()">Create token</button>
+  </form>
+</app-modal>

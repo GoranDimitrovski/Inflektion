@@ -1,0 +1,91 @@
+<section>
+  <div class="page-header">
+    <h1>Links</h1>
+    @if (facade.programs().length > 0) {
+      <button type="button" (click)="showCreateModal.set(true)">New link</button>
+    }
+  </div>
+
+  @if (facade.programs().length === 0) {
+    <p>Create a program first before adding links.</p>
+  } @else {
+    <label>
+      Program
+      <select
+        [value]="selectedProgramId()"
+        (change)="onSelectProgram($any($event.target).value)"
+      >
+        @for (program of facade.programs(); track program.id) {
+          <option [value]="program.id">{{ program.attributes.name }}</option>
+        }
+      </select>
+    </label>
+
+    <app-data-table
+      [loading]="facade.loading()"
+      [error]="facade.error()"
+      [empty]="facade.links().length === 0"
+      emptyMessage="No links yet for this program."
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>Destination</th>
+            <th>Redirect URL</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (link of facade.links(); track link.id) {
+            <tr (contextmenu)="menu.openAt($event)">
+              <td>{{ link.attributes.destinationUrl }}</td>
+              <td><code>{{ link.attributes.redirectUrl }}</code></td>
+              <td>
+                <span class="badge" [class.muted]="link.attributes.status !== 'active'">{{ link.attributes.status }}</span>
+              </td>
+              <td>{{ link.attributes.createdAt | date: 'medium' }}</td>
+              <td>
+                <app-menu #menu>
+                  <button type="button" class="menu-item" (click)="copyRedirectUrl(link.attributes.redirectUrl); menu.close()">
+                    Copy redirect URL
+                  </button>
+                  <button type="button" class="menu-item" (click)="onToggleStatus(link); menu.close()">
+                    {{ link.attributes.status === 'active' ? 'Pause' : 'Activate' }}
+                  </button>
+                </app-menu>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </app-data-table>
+  }
+</section>
+
+<app-modal [open]="showCreateModal()" title="Create a link" (closed)="showCreateModal.set(false)">
+  <form (submit)="$event.preventDefault(); onSubmit()">
+    @if (createError()) {
+      <p class="error">{{ createError() }}</p>
+    }
+
+    <label>
+      Destination URL
+      <input type="url" [formField]="createForm.destinationUrl" placeholder="https://example.com/landing" />
+    </label>
+    @if (createForm.destinationUrl().errors().length > 0) {
+      <p class="field-error">{{ createForm.destinationUrl().errors()[0].message }}</p>
+    }
+
+    <label>
+      Personalization strategy (optional)
+      <select [formField]="createForm.personalizationStrategy">
+        <option value="">None</option>
+        <option value="weighted">Weighted</option>
+      </select>
+    </label>
+
+    <button type="submit" [disabled]="submitting()">Create link</button>
+  </form>
+</app-modal>

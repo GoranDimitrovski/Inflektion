@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AccountsLeaveData, AccountsLeaveErrors, AccountsLeaveResponses, InvitationsAcceptData, InvitationsAcceptErrors, InvitationsAcceptResponses, InvitationsShowData, InvitationsShowErrors, InvitationsShowResponses, LoginData, LoginErrors, LoginResponses, LogoutData, LogoutErrors, LogoutResponses, MeData, MeErrors, MeResponses, PasswordEmailData, PasswordEmailErrors, PasswordEmailResponses, PasswordUpdateData, PasswordUpdateErrors, PasswordUpdateResponses, PostbacksAcceptData, PostbacksAcceptErrors, PostbacksAcceptResponses, TwoFactorChallengeData, TwoFactorChallengeErrors, TwoFactorChallengeResponses, TwoFactorConfirmData, TwoFactorConfirmErrors, TwoFactorConfirmResponses, TwoFactorDisableData, TwoFactorDisableErrors, TwoFactorDisableResponses, TwoFactorEnableData, TwoFactorEnableErrors, TwoFactorEnableResponses, TwoFactorQrCodeData, TwoFactorQrCodeErrors, TwoFactorQrCodeResponses, TwoFactorRecoveryCodesIndexData, TwoFactorRecoveryCodesIndexErrors, TwoFactorRecoveryCodesIndexResponses, TwoFactorRecoveryCodesStoreData, TwoFactorRecoveryCodesStoreErrors, TwoFactorRecoveryCodesStoreResponses, TwoFactorSecretKeyData, TwoFactorSecretKeyErrors, TwoFactorSecretKeyResponses, V1ApiTokensDestroyData, V1ApiTokensDestroyErrors, V1ApiTokensDestroyResponses, V1ApiTokensIndexData, V1ApiTokensIndexErrors, V1ApiTokensIndexResponses, V1ApiTokensStoreData, V1ApiTokensStoreErrors, V1ApiTokensStoreResponses, V1InvitationsDestroyData, V1InvitationsDestroyErrors, V1InvitationsDestroyResponses, V1InvitationsIndexData, V1InvitationsIndexErrors, V1InvitationsIndexResponses, V1InvitationsStoreData, V1InvitationsStoreErrors, V1InvitationsStoreResponses, V1MembershipsDestroyData, V1MembershipsDestroyErrors, V1MembershipsDestroyResponses, V1MembershipsIndexData, V1MembershipsIndexErrors, V1MembershipsIndexResponses, V1MembershipsUpdateData, V1MembershipsUpdateErrors, V1MembershipsUpdateResponses, V1ProgramsIndexData, V1ProgramsIndexErrors, V1ProgramsIndexResponses, V1ProgramsStoreData, V1ProgramsStoreErrors, V1ProgramsStoreResponses } from './types.gen';
+import type { AccountsLeaveData, AccountsLeaveErrors, AccountsLeaveResponses, InvitationsAcceptData, InvitationsAcceptErrors, InvitationsAcceptResponses, InvitationsShowData, InvitationsShowErrors, InvitationsShowResponses, LoginData, LoginErrors, LoginResponses, LogoutData, LogoutErrors, LogoutResponses, MeData, MeErrors, MeResponses, PasswordEmailData, PasswordEmailErrors, PasswordEmailResponses, PasswordUpdateData, PasswordUpdateErrors, PasswordUpdateResponses, PostbacksAcceptData, PostbacksAcceptErrors, PostbacksAcceptResponses, RegisterData, RegisterErrors, RegisterResponses, TwoFactorChallengeData, TwoFactorChallengeErrors, TwoFactorChallengeResponses, TwoFactorConfirmData, TwoFactorConfirmErrors, TwoFactorConfirmResponses, TwoFactorDisableData, TwoFactorDisableErrors, TwoFactorDisableResponses, TwoFactorEnableData, TwoFactorEnableErrors, TwoFactorEnableResponses, TwoFactorQrCodeData, TwoFactorQrCodeErrors, TwoFactorQrCodeResponses, TwoFactorRecoveryCodesIndexData, TwoFactorRecoveryCodesIndexErrors, TwoFactorRecoveryCodesIndexResponses, TwoFactorRecoveryCodesStoreData, TwoFactorRecoveryCodesStoreErrors, TwoFactorRecoveryCodesStoreResponses, TwoFactorSecretKeyData, TwoFactorSecretKeyErrors, TwoFactorSecretKeyResponses, V1ApiTokensDestroyData, V1ApiTokensDestroyErrors, V1ApiTokensDestroyResponses, V1ApiTokensIndexData, V1ApiTokensIndexErrors, V1ApiTokensIndexResponses, V1ApiTokensStoreData, V1ApiTokensStoreErrors, V1ApiTokensStoreResponses, V1InvitationsDestroyData, V1InvitationsDestroyErrors, V1InvitationsDestroyResponses, V1InvitationsIndexData, V1InvitationsIndexErrors, V1InvitationsIndexResponses, V1InvitationsStoreData, V1InvitationsStoreErrors, V1InvitationsStoreResponses, V1LinksIndexData, V1LinksIndexErrors, V1LinksIndexResponses, V1LinksStoreData, V1LinksStoreErrors, V1LinksStoreResponses, V1LinksUpdateData, V1LinksUpdateErrors, V1LinksUpdateResponses, V1MembershipsDestroyData, V1MembershipsDestroyErrors, V1MembershipsDestroyResponses, V1MembershipsIndexData, V1MembershipsIndexErrors, V1MembershipsIndexResponses, V1MembershipsUpdateData, V1MembershipsUpdateErrors, V1MembershipsUpdateResponses, V1ProgramsIndexData, V1ProgramsIndexErrors, V1ProgramsIndexResponses, V1ProgramsStoreData, V1ProgramsStoreErrors, V1ProgramsStoreResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -74,6 +74,26 @@ export const invitationsShow = <ThrowOnError extends boolean = false>(options: O
 
 export const accountsLeave = <ThrowOnError extends boolean = false>(options: Options<AccountsLeaveData, ThrowOnError>): RequestResult<AccountsLeaveResponses, AccountsLeaveErrors, ThrowOnError> => (options.client ?? client).delete<AccountsLeaveResponses, AccountsLeaveErrors, ThrowOnError>({ url: '/v1/accounts/{account}/me/membership', ...options });
 
+export const v1LinksIndex = <ThrowOnError extends boolean = false>(options: Options<V1LinksIndexData, ThrowOnError>): RequestResult<V1LinksIndexResponses, V1LinksIndexErrors, ThrowOnError> => (options.client ?? client).get<V1LinksIndexResponses, V1LinksIndexErrors, ThrowOnError>({ url: '/v1/accounts/{account}/links', ...options });
+
+export const v1LinksStore = <ThrowOnError extends boolean = false>(options: Options<V1LinksStoreData, ThrowOnError>): RequestResult<V1LinksStoreResponses, V1LinksStoreErrors, ThrowOnError> => (options.client ?? client).post<V1LinksStoreResponses, V1LinksStoreErrors, ThrowOnError>({
+    url: '/v1/accounts/{account}/links',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const v1LinksUpdate = <ThrowOnError extends boolean = false>(options: Options<V1LinksUpdateData, ThrowOnError>): RequestResult<V1LinksUpdateResponses, V1LinksUpdateErrors, ThrowOnError> => (options.client ?? client).patch<V1LinksUpdateResponses, V1LinksUpdateErrors, ThrowOnError>({
+    url: '/v1/accounts/{account}/links/{link}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
 export const login = <ThrowOnError extends boolean = false>(options: Options<LoginData, ThrowOnError>): RequestResult<LoginResponses, LoginErrors, ThrowOnError> => (options.client ?? client).post<LoginResponses, LoginErrors, ThrowOnError>({
     url: '/login',
     ...options,
@@ -109,6 +129,15 @@ export const v1ProgramsIndex = <ThrowOnError extends boolean = false>(options: O
 
 export const v1ProgramsStore = <ThrowOnError extends boolean = false>(options: Options<V1ProgramsStoreData, ThrowOnError>): RequestResult<V1ProgramsStoreResponses, V1ProgramsStoreErrors, ThrowOnError> => (options.client ?? client).post<V1ProgramsStoreResponses, V1ProgramsStoreErrors, ThrowOnError>({
     url: '/v1/accounts/{account}/programs',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const register = <ThrowOnError extends boolean = false>(options: Options<RegisterData, ThrowOnError>): RequestResult<RegisterResponses, RegisterErrors, ThrowOnError> => (options.client ?? client).post<RegisterResponses, RegisterErrors, ThrowOnError>({
+    url: '/register',
     ...options,
     headers: {
         'Content-Type': 'application/json',

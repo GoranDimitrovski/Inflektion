@@ -14,6 +14,8 @@ RUN apk add --no-cache \
     && docker-php-ext-enable redis \
     && apk del postgresql-dev icu-dev oniguruma-dev $PHPIZE_DEPS
 
+COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/zz-opcache.ini
+
 COPY --from=composer:2.8.9 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app

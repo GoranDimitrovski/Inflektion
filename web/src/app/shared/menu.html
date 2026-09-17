@@ -1,0 +1,14 @@
+<span class="menu-host">
+  <button type="button" class="icon-button" aria-label="More actions" (click)="toggle($event)">⋮</button>
+
+  @if (isOpen()) {
+    <div
+      class="menu-panel"
+      [class.fixed]="position() !== null"
+      [style.left.px]="position()?.left ?? null"
+      [style.top.px]="position()?.top ?? null"
+    >
+      <ng-content />
+    </div>
+  }
+</span>

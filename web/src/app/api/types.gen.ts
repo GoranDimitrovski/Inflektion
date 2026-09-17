@@ -39,6 +39,17 @@ export type LoginRequest = {
 };
 
 /**
+ * RegisterRequest
+ */
+export type RegisterRequest = {
+    name: string;
+    email: string;
+    password: string;
+    accountName: string;
+    password_confirmation: string;
+};
+
+/**
  * ResetPasswordRequest
  */
 export type ResetPasswordRequest = {
@@ -546,6 +557,196 @@ export type AccountsLeaveResponses = {
 
 export type AccountsLeaveResponse = AccountsLeaveResponses[keyof AccountsLeaveResponses];
 
+export type V1LinksIndexData = {
+    body?: never;
+    path: {
+        account: string;
+    };
+    query?: never;
+    url: '/v1/accounts/{account}/links';
+};
+
+export type V1LinksIndexErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1LinksIndexError = V1LinksIndexErrors[keyof V1LinksIndexErrors];
+
+export type V1LinksIndexResponses = {
+    200: {
+        data: Array<{
+            type: string;
+            id: string;
+            attributes: {
+                programId: number;
+                destinationUrl: string;
+                token: string;
+                redirectUrl: string;
+                status: string;
+                personalizationStrategy: string | null;
+                createdAt: string;
+                updatedAt: string;
+            };
+            links: {
+                self: string;
+            };
+        }>;
+        links: {
+            first: string;
+            last: string;
+            prev: string | null;
+            next: string | null;
+        };
+        meta: {
+            page: {
+                currentPage: number;
+                from: number | null;
+                lastPage: number;
+                perPage: number;
+                to: number | null;
+                total: number;
+            };
+        };
+        jsonapi: {
+            version: string;
+        };
+    };
+};
+
+export type V1LinksIndexResponse = V1LinksIndexResponses[keyof V1LinksIndexResponses];
+
+export type V1LinksStoreData = {
+    body: {
+        /**
+         * The JSON:API resource object to create.
+         */
+        data: {
+            type: string;
+            attributes: {
+                programId: number;
+                destinationUrl: string;
+                personalizationStrategy?: string;
+            };
+        };
+    };
+    path: {
+        account: string;
+    };
+    query?: never;
+    url: '/v1/accounts/{account}/links';
+};
+
+export type V1LinksStoreErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1LinksStoreError = V1LinksStoreErrors[keyof V1LinksStoreErrors];
+
+export type V1LinksStoreResponses = {
+    200: {
+        data: {
+            type: string;
+            id: string;
+            attributes: {
+                programId: number;
+                destinationUrl: string;
+                token: string;
+                redirectUrl: string;
+                status: string;
+                personalizationStrategy: string | null;
+                createdAt: string;
+                updatedAt: string;
+            };
+            links: {
+                self: string;
+            };
+        };
+        jsonapi: {
+            version: string;
+        };
+    };
+};
+
+export type V1LinksStoreResponse = V1LinksStoreResponses[keyof V1LinksStoreResponses];
+
+export type V1LinksUpdateData = {
+    body: {
+        /**
+         * The JSON:API resource object to update.
+         */
+        data: {
+            type: string;
+            id: string;
+            attributes: {
+                status: string;
+            };
+        };
+    };
+    path: {
+        account: string;
+        link: string;
+    };
+    query?: never;
+    url: '/v1/accounts/{account}/links/{link}';
+};
+
+export type V1LinksUpdateErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1LinksUpdateError = V1LinksUpdateErrors[keyof V1LinksUpdateErrors];
+
+export type V1LinksUpdateResponses = {
+    200: {
+        data: {
+            type: string;
+            id: string;
+            attributes: {
+                programId: number;
+                destinationUrl: string;
+                token: string;
+                redirectUrl: string;
+                status: string;
+                personalizationStrategy: string | null;
+                createdAt: string;
+                updatedAt: string;
+            };
+            links: {
+                self: string;
+            };
+        };
+        jsonapi: {
+            version: string;
+        };
+    };
+};
+
+export type V1LinksUpdateResponse = V1LinksUpdateResponses[keyof V1LinksUpdateResponses];
+
 export type LoginData = {
     body: LoginRequest;
     path?: never;
@@ -990,6 +1191,42 @@ export type V1ProgramsStoreResponses = {
 };
 
 export type V1ProgramsStoreResponse = V1ProgramsStoreResponses[keyof V1ProgramsStoreResponses];
+
+export type RegisterData = {
+    body: RegisterRequest;
+    path?: never;
+    query?: never;
+    url: '/register';
+};
+
+export type RegisterErrors = {
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type RegisterError = RegisterErrors[keyof RegisterErrors];
+
+export type RegisterResponses = {
+    /**
+     * No content
+     */
+    204: void;
+};
+
+export type RegisterResponse = RegisterResponses[keyof RegisterResponses];
 
 export type PasswordUpdateData = {
     body: ResetPasswordRequest;

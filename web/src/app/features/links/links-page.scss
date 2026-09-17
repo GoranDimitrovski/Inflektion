@@ -1,0 +1,27 @@
+section {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem 3rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+label {
+  max-width: 320px;
+}
+
+table {
+  margin: 1.5rem 0 2rem;
+}
+
+td:last-child {
+  text-align: right;
+}

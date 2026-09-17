@@ -9,7 +9,7 @@ WEB := docker compose run --rm web sh -c
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
 
-setup: ## Set up the whole project from scratch: build, install deps, generate key, migrate
+setup: ## Set up the whole project from scratch: build, install deps, generate key, migrate, seed
 	@test -f .env || cp .env.example .env
 	@test -f api/.env || cp api/.env.example api/.env
 	docker compose build
@@ -18,6 +18,7 @@ setup: ## Set up the whole project from scratch: build, install deps, generate k
 	$(WEB) "pnpm install --frozen-lockfile"
 	$(APP) php artisan key:generate
 	$(APP) php artisan migrate
+	$(APP) php artisan db:seed
 	docker compose up -d app web
 	@echo "Setup complete. API: http://localhost:8000  Web: http://localhost:4200"
 

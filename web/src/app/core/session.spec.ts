@@ -66,6 +66,42 @@ describe('SessionService', () => {
     expect(session.isAuthenticated()).toBe(false);
   });
 
+  it('sets twoFactorPending and never calls /me when the account has 2FA enabled', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ data: { twoFactorRequired: true } }, 200));
+
+    const session = TestBed.inject(SessionService);
+    const success = await session.login('ada@example.test', 'password');
+
+    expect(success).toBe(false);
+    expect(session.twoFactorPending()).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(session.isAuthenticated()).toBe(false);
+  });
+
+  it('twoFactorChallenge completes the login and clears twoFactorPending on success', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse({ data: { twoFactorRequired: true } }, 200))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(jsonResponse(oneMembership));
+
+    const session = TestBed.inject(SessionService);
+    await session.login('ada@example.test', 'password');
+
+    const success = await session.twoFactorChallenge({ code: '123456' });
+
+    expect(success).toBe(true);
+    expect(session.twoFactorPending()).toBe(false);
+    expect(session.isAuthenticated()).toBe(true);
+  });
+
+  it('twoFactorChallenge returns false on an invalid code', async () => {
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 422 }));
+
+    const session = TestBed.inject(SessionService);
+
+    expect(await session.twoFactorChallenge({ code: 'wrong' })).toBe(false);
+  });
+
   it('resolves permissions from the membership matching the active account, not any membership', async () => {
     fetchMock.mockResolvedValueOnce(
       jsonResponse({

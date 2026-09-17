@@ -11,12 +11,14 @@ export interface MembershipView {
   account: AccountSummary;
   role: string;
   permissions: string[];
+  twoFactorRequired: boolean;
 }
 
 export interface UserSummary {
   id: number;
   name: string;
   email: string;
+  twoFactorEnabled: boolean;
 }
 
 /**
@@ -30,6 +32,7 @@ export class SessionService {
   private readonly userSignal = signal<UserSummary | null>(null);
   private readonly membershipsSignal = signal<MembershipView[]>([]);
   private readonly activeAccountIdSignal = signal<number | null>(null);
+  readonly twoFactorPending = signal(false);
 
   readonly isAuthenticated = computed(() => this.userSignal() !== null);
   readonly user = computed(() => this.userSignal());
@@ -57,11 +60,66 @@ export class SessionService {
   }
 
   async login(email: string, password: string): Promise<boolean> {
+    this.twoFactorPending.set(false);
+
     const response = await fetch(`${this.apiOrigin()}/login`, {
       method: 'POST',
       credentials: 'include',
       headers: this.jsonHeaders(),
       body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    // A 2FA-enabled user gets a 200 with this flag instead of the usual 204 —
+    // no session exists yet until /two-factor-challenge completes it.
+    if (response.status === 200) {
+      const body = (await response.json()) as { data: { twoFactorRequired: boolean } };
+
+      if (body.data.twoFactorRequired) {
+        this.twoFactorPending.set(true);
+
+        return false;
+      }
+    }
+
+    await this.load();
+
+    return true;
+  }
+
+  async twoFactorChallenge(payload: { code?: string; recovery_code?: string }): Promise<boolean> {
+    const response = await fetch(`${this.apiOrigin()}/two-factor-challenge`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: this.jsonHeaders(),
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    this.twoFactorPending.set(false);
+    await this.load();
+
+    return true;
+  }
+
+  async register(payload: {
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+    accountName: string;
+  }): Promise<boolean> {
+    const response = await fetch(`${this.apiOrigin()}/register`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: this.jsonHeaders(),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
@@ -111,6 +169,7 @@ export class SessionService {
     this.userSignal.set(null);
     this.membershipsSignal.set([]);
     this.activeAccountIdSignal.set(null);
+    this.twoFactorPending.set(false);
   }
 
   async load(): Promise<boolean> {

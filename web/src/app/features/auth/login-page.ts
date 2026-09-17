@@ -8,6 +8,10 @@ interface LoginModel {
   password: string;
 }
 
+interface ChallengeModel {
+  code: string;
+}
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormField, RouterLink],
@@ -16,7 +20,7 @@ interface LoginModel {
   templateUrl: './login-page.html',
 })
 export class LoginPage {
-  private readonly session = inject(SessionService);
+  protected readonly session = inject(SessionService);
   private readonly router = inject(Router);
 
   protected readonly model = signal<LoginModel>({ email: '', password: '' });
@@ -24,6 +28,12 @@ export class LoginPage {
   protected readonly loginForm = form(this.model, (path) => {
     required(path.email, { message: 'Email is required.' });
     required(path.password, { message: 'Password is required.' });
+  });
+
+  protected readonly challengeModel = signal<ChallengeModel>({ code: '' });
+
+  protected readonly challengeForm = form(this.challengeModel, (path) => {
+    required(path.code, { message: 'Enter your authentication code.' });
   });
 
   protected readonly submitting = signal(false);
@@ -38,18 +48,45 @@ export class LoginPage {
       const success = await this.session.login(email, password);
 
       if (!success) {
-        this.error.set('Invalid email or password.');
+        if (!this.session.twoFactorPending()) {
+          this.error.set('Invalid email or password.');
+        }
 
         return;
       }
 
-      const firstAccountId = this.session.memberships()[0]?.account.id;
-
-      await this.router.navigate(
-        firstAccountId ? ['/accounts', firstAccountId, 'programs'] : ['/'],
-      );
+      await this.navigateToFirstAccount();
     });
 
     this.submitting.set(false);
+  }
+
+  protected async onSubmitChallenge(): Promise<void> {
+    this.submitting.set(true);
+    this.error.set(null);
+
+    await submit(this.challengeForm, async () => {
+      // Recovery codes are generated as "xxxxxxxxxx-xxxxxxxxxx" (see Fortify's
+      // RecoveryCode::generate) — a TOTP code never contains a hyphen.
+      const value = this.challengeModel().code.trim();
+      const payload = value.includes('-') ? { recovery_code: value } : { code: value };
+      const success = await this.session.twoFactorChallenge(payload);
+
+      if (!success) {
+        this.error.set('That code is invalid or has expired.');
+
+        return;
+      }
+
+      await this.navigateToFirstAccount();
+    });
+
+    this.submitting.set(false);
+  }
+
+  private async navigateToFirstAccount(): Promise<void> {
+    const firstAccountId = this.session.memberships()[0]?.account.id;
+
+    await this.router.navigate(firstAccountId ? ['/accounts', firstAccountId, 'programs'] : ['/']);
   }
 }

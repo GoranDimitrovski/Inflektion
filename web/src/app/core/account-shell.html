@@ -1,0 +1,22 @@
+@if (session.activeMembership(); as membership) {
+  <header>
+    <div class="brand">Inflection</div>
+
+    <nav>
+      <a [routerLink]="['/accounts', membership.account.id, 'programs']" routerLinkActive="active">Programs</a>
+      <a [routerLink]="['/accounts', membership.account.id, 'links']" routerLinkActive="active">Links</a>
+      <a [routerLink]="['/accounts', membership.account.id, 'members']" routerLinkActive="active">Members</a>
+      <a [routerLink]="['/accounts', membership.account.id, 'settings']" routerLinkActive="active">Settings</a>
+    </nav>
+
+    <div class="account">
+      <span class="account-name">{{ membership.account.name }}</span>
+      <span class="user-name">{{ session.user()?.name }}</span>
+      <button type="button" class="secondary" (click)="onLogout()">Log out</button>
+    </div>
+  </header>
+
+  <main>
+    <router-outlet />
+  </main>
+}

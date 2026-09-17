@@ -1065,6 +1065,540 @@
                 }
             }
         },
+        "/v1/accounts/{account}/links": {
+            "get": {
+                "operationId": "v1.links.index",
+                "tags": [
+                    "Link"
+                ],
+                "parameters": [
+                    {
+                        "name": "account",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "attributes": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "programId": {
+                                                                "type": "integer"
+                                                            },
+                                                            "destinationUrl": {
+                                                                "type": "string"
+                                                            },
+                                                            "token": {
+                                                                "type": "string"
+                                                            },
+                                                            "redirectUrl": {
+                                                                "type": "string"
+                                                            },
+                                                            "status": {
+                                                                "type": "string"
+                                                            },
+                                                            "personalizationStrategy": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "createdAt": {
+                                                                "type": "string"
+                                                            },
+                                                            "updatedAt": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "programId",
+                                                            "destinationUrl",
+                                                            "token",
+                                                            "redirectUrl",
+                                                            "status",
+                                                            "personalizationStrategy",
+                                                            "createdAt",
+                                                            "updatedAt"
+                                                        ]
+                                                    },
+                                                    "links": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "self": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "self"
+                                                        ]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "type",
+                                                    "id",
+                                                    "attributes",
+                                                    "links"
+                                                ]
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": "string"
+                                                },
+                                                "last": {
+                                                    "type": "string"
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "page": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "currentPage": {
+                                                            "type": "integer"
+                                                        },
+                                                        "from": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "lastPage": {
+                                                            "type": "integer"
+                                                        },
+                                                        "perPage": {
+                                                            "type": "integer"
+                                                        },
+                                                        "to": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "total": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "currentPage",
+                                                        "from",
+                                                        "lastPage",
+                                                        "perPage",
+                                                        "to",
+                                                        "total"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "page"
+                                            ]
+                                        },
+                                        "jsonapi": {
+                                            "type": "object",
+                                            "properties": {
+                                                "version": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "version"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta",
+                                        "jsonapi"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "v1.links.store",
+                "tags": [
+                    "Link"
+                ],
+                "parameters": [
+                    {
+                        "name": "account",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "data": {
+                                        "type": "object",
+                                        "description": "The JSON:API resource object to create.",
+                                        "properties": {
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "attributes": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "programId": {
+                                                        "type": "integer"
+                                                    },
+                                                    "destinationUrl": {
+                                                        "type": "string"
+                                                    },
+                                                    "personalizationStrategy": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "programId",
+                                                    "destinationUrl"
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "type",
+                                            "attributes"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "data"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "attributes": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "programId": {
+                                                            "type": "integer"
+                                                        },
+                                                        "destinationUrl": {
+                                                            "type": "string"
+                                                        },
+                                                        "token": {
+                                                            "type": "string"
+                                                        },
+                                                        "redirectUrl": {
+                                                            "type": "string"
+                                                        },
+                                                        "status": {
+                                                            "type": "string"
+                                                        },
+                                                        "personalizationStrategy": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "createdAt": {
+                                                            "type": "string"
+                                                        },
+                                                        "updatedAt": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "programId",
+                                                        "destinationUrl",
+                                                        "token",
+                                                        "redirectUrl",
+                                                        "status",
+                                                        "personalizationStrategy",
+                                                        "createdAt",
+                                                        "updatedAt"
+                                                    ]
+                                                },
+                                                "links": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "self": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "self"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "id",
+                                                "attributes",
+                                                "links"
+                                            ]
+                                        },
+                                        "jsonapi": {
+                                            "type": "object",
+                                            "properties": {
+                                                "version": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "version"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "jsonapi"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/accounts/{account}/links/{link}": {
+            "patch": {
+                "operationId": "v1.links.update",
+                "tags": [
+                    "Link"
+                ],
+                "parameters": [
+                    {
+                        "name": "account",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "link",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "data": {
+                                        "type": "object",
+                                        "description": "The JSON:API resource object to update.",
+                                        "properties": {
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "attributes": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "status": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "status"
+                                                ]
+                                            }
+                                        },
+                                        "required": [
+                                            "type",
+                                            "id",
+                                            "attributes"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "data"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "attributes": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "programId": {
+                                                            "type": "integer"
+                                                        },
+                                                        "destinationUrl": {
+                                                            "type": "string"
+                                                        },
+                                                        "token": {
+                                                            "type": "string"
+                                                        },
+                                                        "redirectUrl": {
+                                                            "type": "string"
+                                                        },
+                                                        "status": {
+                                                            "type": "string"
+                                                        },
+                                                        "personalizationStrategy": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "createdAt": {
+                                                            "type": "string"
+                                                        },
+                                                        "updatedAt": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "programId",
+                                                        "destinationUrl",
+                                                        "token",
+                                                        "redirectUrl",
+                                                        "status",
+                                                        "personalizationStrategy",
+                                                        "createdAt",
+                                                        "updatedAt"
+                                                    ]
+                                                },
+                                                "links": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "self": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "self"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "id",
+                                                "attributes",
+                                                "links"
+                                            ]
+                                        },
+                                        "jsonapi": {
+                                            "type": "object",
+                                            "properties": {
+                                                "version": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "version"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "jsonapi"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "operationId": "login",
@@ -2060,6 +2594,32 @@
                 }
             }
         },
+        "/register": {
+            "post": {
+                "operationId": "register",
+                "tags": [
+                    "Register"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/reset-password": {
             "post": {
                 "operationId": "password.update",
@@ -2383,6 +2943,40 @@
                     "password"
                 ],
                 "title": "LoginRequest"
+            },
+            "RegisterRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8
+                    },
+                    "accountName": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "password_confirmation": {
+                        "type": "string",
+                        "minLength": 8
+                    }
+                },
+                "required": [
+                    "name",
+                    "email",
+                    "password",
+                    "accountName",
+                    "password_confirmation"
+                ],
+                "title": "RegisterRequest"
             },
             "ResetPasswordRequest": {
                 "type": "object",

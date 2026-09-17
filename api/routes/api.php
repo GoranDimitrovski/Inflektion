@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\InvitationLookupController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\MeController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
 use App\Http\Controllers\Auth\TwoFactorChallengeController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Auth\TwoFactorRecoveryCodesController;
 use App\Http\Controllers\Auth\TwoFactorSecretKeyController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\LeaveAccountController;
+use App\Http\Controllers\LinkController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Middleware\ResolveTenant;
@@ -24,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 use LaravelJsonApi\Laravel\Facades\JsonApiRoute;
 use LaravelJsonApi\Laravel\Routing\ResourceRegistrar;
 
+Route::post('register', RegisterController::class)->middleware('throttle:5,1')->name('register');
 Route::post('login', LoginController::class)->middleware('throttle:5,1')->name('login');
 Route::delete('logout', LogoutController::class)->middleware('auth:sanctum')->name('logout');
 Route::post('forgot-password', ForgotPasswordController::class)->middleware('throttle:5,1')->name('password.email');
@@ -68,6 +71,7 @@ JsonApiRoute::server('v1')
     ->middleware('auth:sanctum', ResolveTenant::class)
     ->resources(function (ResourceRegistrar $server): void {
         $server->resource('programs', ProgramController::class)->only('index', 'store');
+        $server->resource('links', LinkController::class)->only('index', 'store', 'update');
         $server->resource('invitations', InvitationController::class)->only('index', 'store', 'destroy');
         $server->resource('memberships', MembershipController::class)->only('index', 'update', 'destroy');
         $server->resource('api-tokens', ApiTokenController::class)->only('index', 'store', 'destroy');

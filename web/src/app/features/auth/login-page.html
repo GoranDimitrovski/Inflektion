@@ -1,29 +1,50 @@
 <section>
-  <h1>Log in</h1>
+  @if (session.twoFactorPending()) {
+    <h1>Two-factor authentication</h1>
 
-  @if (error()) {
-    <p class="error">{{ error() }}</p>
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+
+    <form (submit)="$event.preventDefault(); onSubmitChallenge()">
+      <label>
+        Authentication code or recovery code
+        <input type="text" autocomplete="one-time-code" [formField]="challengeForm.code" />
+      </label>
+      @if (challengeForm.code().errors().length > 0) {
+        <p class="field-error">{{ challengeForm.code().errors()[0].message }}</p>
+      }
+
+      <button type="submit" [disabled]="submitting()">Verify</button>
+    </form>
+  } @else {
+    <h1>Log in</h1>
+
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+
+    <form (submit)="$event.preventDefault(); onSubmit()">
+      <label>
+        Email
+        <input type="email" [formField]="loginForm.email" />
+      </label>
+      @if (loginForm.email().errors().length > 0) {
+        <p class="field-error">{{ loginForm.email().errors()[0].message }}</p>
+      }
+
+      <label>
+        Password
+        <input type="password" [formField]="loginForm.password" />
+      </label>
+      @if (loginForm.password().errors().length > 0) {
+        <p class="field-error">{{ loginForm.password().errors()[0].message }}</p>
+      }
+
+      <button type="submit" [disabled]="submitting()">Log in</button>
+    </form>
+
+    <p><a routerLink="/forgot-password">Forgot your password?</a></p>
+    <p><a routerLink="/register">Don't have an account? Create one</a></p>
   }
-
-  <form (submit)="$event.preventDefault(); onSubmit()">
-    <label>
-      Email
-      <input type="email" [formField]="loginForm.email" />
-    </label>
-    @if (loginForm.email().errors().length > 0) {
-      <p class="field-error">{{ loginForm.email().errors()[0].message }}</p>
-    }
-
-    <label>
-      Password
-      <input type="password" [formField]="loginForm.password" />
-    </label>
-    @if (loginForm.password().errors().length > 0) {
-      <p class="field-error">{{ loginForm.password().errors()[0].message }}</p>
-    }
-
-    <button type="submit" [disabled]="submitting()">Log in</button>
-  </form>
-
-  <p><a routerLink="/forgot-password">Forgot your password?</a></p>
 </section>

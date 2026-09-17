@@ -1,0 +1,53 @@
+<section>
+  <h1>Create your account</h1>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  <form (submit)="$event.preventDefault(); onSubmit()">
+    <label>
+      Your name
+      <input type="text" [formField]="registerForm.name" />
+    </label>
+    @if (registerForm.name().errors().length > 0) {
+      <p class="field-error">{{ registerForm.name().errors()[0].message }}</p>
+    }
+
+    <label>
+      Email
+      <input type="email" [formField]="registerForm.email" />
+    </label>
+    @if (registerForm.email().errors().length > 0) {
+      <p class="field-error">{{ registerForm.email().errors()[0].message }}</p>
+    }
+
+    <label>
+      Password
+      <input type="password" [formField]="registerForm.password" />
+    </label>
+    @if (registerForm.password().errors().length > 0) {
+      <p class="field-error">{{ registerForm.password().errors()[0].message }}</p>
+    }
+
+    <label>
+      Confirm password
+      <input type="password" [formField]="registerForm.password_confirmation" />
+    </label>
+    @if (registerForm.password_confirmation().errors().length > 0) {
+      <p class="field-error">{{ registerForm.password_confirmation().errors()[0].message }}</p>
+    }
+
+    <label>
+      Account name
+      <input type="text" [formField]="registerForm.accountName" />
+    </label>
+    @if (registerForm.accountName().errors().length > 0) {
+      <p class="field-error">{{ registerForm.accountName().errors()[0].message }}</p>
+    }
+
+    <button type="submit" [disabled]="submitting()">Create account</button>
+  </form>
+
+  <p><a routerLink="/login">Already have an account? Log in</a></p>
+</section>

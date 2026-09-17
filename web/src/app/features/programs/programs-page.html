@@ -1,11 +1,12 @@
 <section>
-  <h1>Programs</h1>
+  <div class="page-header">
+    <h1>Programs</h1>
+    <button type="button" (click)="showCreateModal.set(true)">New program</button>
+  </div>
 
   @if (facade.loading()) {
     <p>Loading…</p>
-  }
-
-  @if (facade.error()) {
+  } @else if (facade.error()) {
     <p class="error">{{ facade.error() }}</p>
   }
 
@@ -14,16 +15,18 @@
       <li>
         <strong>{{ program.attributes.name }}</strong>
         <span class="slug">{{ program.attributes.slug }}</span>
-        <span class="status">{{ program.attributes.status }}</span>
+        <span class="badge status">{{ program.attributes.status }}</span>
       </li>
     } @empty {
-      <li>No programs yet.</li>
+      @if (!facade.loading()) {
+        <li>No programs yet.</li>
+      }
     }
   </ul>
+</section>
 
+<app-modal [open]="showCreateModal()" title="New program" (closed)="showCreateModal.set(false)">
   <form (submit)="$event.preventDefault(); onSubmit()">
-    <h2>New program</h2>
-
     <label>
       Name
       <input type="text" [formField]="createForm.name" />
@@ -42,4 +45,4 @@
 
     <button type="submit" [disabled]="submitting()">Create</button>
   </form>
-</section>
+</app-modal>

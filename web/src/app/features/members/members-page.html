@@ -10,12 +10,15 @@
 
     <button type="button" [disabled]="leaving()" (click)="onLeave()">Leave this account</button>
   } @else {
-    <nav class="tabs">
-      <button type="button" [class.active]="tab() === 'members'" (click)="tab.set('members')">Members</button>
-      <button type="button" [class.active]="tab() === 'invitations'" (click)="tab.set('invitations')">
-        Pending invitations
-      </button>
-    </nav>
+    <div class="page-header">
+      <nav class="tabs">
+        <button type="button" [class.active]="tab() === 'members'" (click)="tab.set('members')">Members</button>
+        <button type="button" [class.active]="tab() === 'invitations'" (click)="tab.set('invitations')">
+          Pending invitations
+        </button>
+      </nav>
+      <button type="button" (click)="showInviteModal.set(true)">Invite someone</button>
+    </div>
 
     @if (tab() === 'members') {
       <app-data-table
@@ -57,10 +60,10 @@
                       placeholder="Type their email to confirm"
                       (keyup.enter)="confirmRemoval(membership, confirmInput.value)"
                     />
-                    <button type="button" (click)="confirmRemoval(membership, confirmInput.value)">Confirm</button>
-                    <button type="button" (click)="confirmingRemovalOf.set(null)">Cancel</button>
+                    <button type="button" class="danger" (click)="confirmRemoval(membership, confirmInput.value)">Confirm</button>
+                    <button type="button" class="secondary" (click)="confirmingRemovalOf.set(null)">Cancel</button>
                   } @else {
-                    <button type="button" (click)="confirmingRemovalOf.set(membership.id)">
+                    <button type="button" class="secondary" (click)="confirmingRemovalOf.set(membership.id)">
                       {{ isSelf(membership) ? 'Leave' : 'Remove' }}
                     </button>
                   }
@@ -70,33 +73,6 @@
           </tbody>
         </table>
       </app-data-table>
-
-      <form (submit)="$event.preventDefault(); onInvite()">
-        <h2>Invite someone</h2>
-
-        @if (inviteError()) {
-          <p class="error">{{ inviteError() }}</p>
-        }
-
-        <label>
-          Email
-          <input type="email" [formField]="inviteForm.email" />
-        </label>
-        @if (inviteForm.email().errors().length > 0) {
-          <p class="field-error">{{ inviteForm.email().errors()[0].message }}</p>
-        }
-
-        <label>
-          Role
-          <select [formField]="inviteForm.role">
-            @for (role of roles; track role) {
-              <option [value]="role">{{ role }}</option>
-            }
-          </select>
-        </label>
-
-        <button type="submit" [disabled]="inviting()">Send invitation</button>
-      </form>
     } @else {
       <app-data-table
         [loading]="facade.loading()"
@@ -117,10 +93,10 @@
             @for (invitation of facade.invitations(); track invitation.id) {
               <tr>
                 <td>{{ invitation.attributes.email }}</td>
-                <td>{{ invitation.attributes.role }}</td>
+                <td><span class="badge muted">{{ invitation.attributes.role }}</span></td>
                 <td>{{ invitation.attributes.expiresAt | date: 'medium' }}</td>
                 <td>
-                  <button type="button" (click)="onRevokeInvitation(invitation)">Revoke</button>
+                  <button type="button" class="danger" (click)="onRevokeInvitation(invitation)">Revoke</button>
                 </td>
               </tr>
             }
@@ -130,3 +106,30 @@
     }
   }
 </section>
+
+<app-modal [open]="showInviteModal()" title="Invite someone" (closed)="showInviteModal.set(false)">
+  <form (submit)="$event.preventDefault(); onInvite()">
+    @if (inviteError()) {
+      <p class="error">{{ inviteError() }}</p>
+    }
+
+    <label>
+      Email
+      <input type="email" [formField]="inviteForm.email" />
+    </label>
+    @if (inviteForm.email().errors().length > 0) {
+      <p class="field-error">{{ inviteForm.email().errors()[0].message }}</p>
+    }
+
+    <label>
+      Role
+      <select [formField]="inviteForm.role">
+        @for (role of roles; track role) {
+          <option [value]="role">{{ role }}</option>
+        }
+      </select>
+    </label>
+
+    <button type="submit" [disabled]="inviting()">Send invitation</button>
+  </form>
+</app-modal>

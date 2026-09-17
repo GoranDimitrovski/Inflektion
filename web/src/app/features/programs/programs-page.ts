@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 import { FormField, form, required, submit } from '@angular/forms/signals';
 import { SessionService } from '../../core/session';
+import { Modal } from '../../shared/modal';
 import { ProgramsFacade } from './programs.facade';
 
 interface CreateProgramModel {
@@ -10,7 +11,7 @@ interface CreateProgramModel {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormField],
+  imports: [FormField, Modal],
   providers: [ProgramsFacade],
   selector: 'app-programs-page',
   styleUrl: './programs-page.scss',
@@ -19,6 +20,8 @@ interface CreateProgramModel {
 export class ProgramsPage implements OnInit {
   protected readonly facade = inject(ProgramsFacade);
   private readonly session = inject(SessionService);
+
+  protected readonly showCreateModal = signal(false);
 
   protected readonly model = signal<CreateProgramModel>({ name: '', slug: '' });
 
@@ -43,6 +46,7 @@ export class ProgramsPage implements OnInit {
 
       if (created) {
         this.model.set({ name: '', slug: '' });
+        this.showCreateModal.set(false);
       }
     });
 

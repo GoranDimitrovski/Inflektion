@@ -6,6 +6,7 @@ namespace App\JsonApi\V1;
 
 use App\JsonApi\V1\ApiTokens\ApiTokenSchema;
 use App\JsonApi\V1\Invitations\InvitationSchema;
+use App\JsonApi\V1\Links\LinkSchema;
 use App\JsonApi\V1\Memberships\MembershipSchema;
 use App\JsonApi\V1\Programs\ProgramSchema;
 use App\Models\Account;
@@ -30,6 +31,7 @@ class Server extends BaseServer
     {
         return [
             ProgramSchema::class,
+            LinkSchema::class,
             InvitationSchema::class,
             MembershipSchema::class,
             ApiTokenSchema::class,

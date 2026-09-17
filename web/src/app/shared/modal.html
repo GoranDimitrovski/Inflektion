@@ -1,0 +1,16 @@
+@if (open()) {
+  <!-- Pointer-only "click outside to close"; Escape already covers the keyboard-dismiss case (see the host listener). -->
+  <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+  <div class="backdrop" (click)="onBackdropClick($event)">
+    <div class="dialog" role="dialog" aria-modal="true" [attr.aria-label]="title() || null">
+      <div class="dialog-header">
+        @if (title()) {
+          <h2>{{ title() }}</h2>
+        }
+        <button type="button" class="icon-button" aria-label="Close" (click)="closed.emit()">✕</button>
+      </div>
+
+      <ng-content />
+    </div>
+  </div>
+}
