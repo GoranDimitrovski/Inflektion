@@ -38,11 +38,17 @@ final class ApiTokenController
         private readonly TenantContext $tenant,
     ) {}
 
+    /**
+     * @response array{data: list<array{type: string, id: string, attributes: array{name: string, abilities: list<string>, lastUsedAt: string|null, expiresAt: string|null, createdAt: string}, links: array{self: string}}>, links: array{first: string, last: string, prev: string|null, next: string|null}, meta: array{page: array{currentPage: int, from: int|null, lastPage: int, perPage: int, to: int|null, total: int}}, jsonapi: array{version: string}}
+     */
     public function index(Route $route, StoreContract $store): Responsable|Response
     {
         return $this->packageIndex($route, $store);
     }
 
+    /**
+     * @response array{data: array{type: string, id: string, attributes: array{name: string, abilities: list<string>, lastUsedAt: string|null, expiresAt: string|null, createdAt: string}, links: array{self: string}}, meta: array{plainTextToken: string}, jsonapi: array{version: string}}
+     */
     #[BodyParameter(
         name: 'data',
         description: 'The JSON:API resource object to create.',

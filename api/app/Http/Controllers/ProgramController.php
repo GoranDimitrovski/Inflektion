@@ -29,11 +29,17 @@ final class ProgramController
         store as private packageStore;
     }
 
+    /**
+     * @response array{data: list<array{type: string, id: string, attributes: array{name: string, slug: string, status: string, commissionStrategy: string|null, commissionRate: string|null, commissionFlatAmountMinorUnits: int|null, commissionFlatAmountCurrency: string|null, createdAt: string, updatedAt: string}, links: array{self: string}}>, links: array{first: string, last: string, prev: string|null, next: string|null}, meta: array{page: array{currentPage: int, from: int|null, lastPage: int, perPage: int, to: int|null, total: int}}, jsonapi: array{version: string}}
+     */
     public function index(Route $route, StoreContract $store): Responsable|Response
     {
         return $this->packageIndex($route, $store);
     }
 
+    /**
+     * @response array{data: array{type: string, id: string, attributes: array{name: string, slug: string, status: string, commissionStrategy: string|null, commissionRate: string|null, commissionFlatAmountMinorUnits: int|null, commissionFlatAmountCurrency: string|null, createdAt: string, updatedAt: string}, links: array{self: string}}, jsonapi: array{version: string}}
+     */
     #[BodyParameter(
         name: 'data',
         description: 'The JSON:API resource object to create.',

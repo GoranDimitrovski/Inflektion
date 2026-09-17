@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AccountsLeaveData, AccountsLeaveErrors, AccountsLeaveResponses, InvitationsAcceptData, InvitationsAcceptErrors, InvitationsAcceptResponses, InvitationsShowData, InvitationsShowErrors, InvitationsShowResponses, LoginData, LoginErrors, LoginResponses, LogoutData, LogoutErrors, LogoutResponses, MeData, MeErrors, MeResponses, PasswordEmailData, PasswordEmailErrors, PasswordEmailResponses, PasswordUpdateData, PasswordUpdateErrors, PasswordUpdateResponses, PostbacksAcceptData, PostbacksAcceptErrors, PostbacksAcceptResponses, V1ApiTokensDestroyData, V1ApiTokensDestroyErrors, V1ApiTokensDestroyResponses, V1ApiTokensIndexData, V1ApiTokensIndexErrors, V1ApiTokensIndexResponses, V1ApiTokensStoreData, V1ApiTokensStoreErrors, V1ApiTokensStoreResponses, V1InvitationsDestroyData, V1InvitationsDestroyErrors, V1InvitationsDestroyResponses, V1InvitationsIndexData, V1InvitationsIndexErrors, V1InvitationsIndexResponses, V1InvitationsStoreData, V1InvitationsStoreErrors, V1InvitationsStoreResponses, V1MembershipsDestroyData, V1MembershipsDestroyErrors, V1MembershipsDestroyResponses, V1MembershipsIndexData, V1MembershipsIndexErrors, V1MembershipsIndexResponses, V1MembershipsUpdateData, V1MembershipsUpdateErrors, V1MembershipsUpdateResponses, V1ProgramsIndexData, V1ProgramsIndexErrors, V1ProgramsIndexResponses, V1ProgramsStoreData, V1ProgramsStoreErrors, V1ProgramsStoreResponses } from './types.gen';
+import type { AccountsLeaveData, AccountsLeaveErrors, AccountsLeaveResponses, InvitationsAcceptData, InvitationsAcceptErrors, InvitationsAcceptResponses, InvitationsShowData, InvitationsShowErrors, InvitationsShowResponses, LoginData, LoginErrors, LoginResponses, LogoutData, LogoutErrors, LogoutResponses, MeData, MeErrors, MeResponses, PasswordEmailData, PasswordEmailErrors, PasswordEmailResponses, PasswordUpdateData, PasswordUpdateErrors, PasswordUpdateResponses, PostbacksAcceptData, PostbacksAcceptErrors, PostbacksAcceptResponses, TwoFactorChallengeData, TwoFactorChallengeErrors, TwoFactorChallengeResponses, TwoFactorConfirmData, TwoFactorConfirmErrors, TwoFactorConfirmResponses, TwoFactorDisableData, TwoFactorDisableErrors, TwoFactorDisableResponses, TwoFactorEnableData, TwoFactorEnableErrors, TwoFactorEnableResponses, TwoFactorQrCodeData, TwoFactorQrCodeErrors, TwoFactorQrCodeResponses, TwoFactorRecoveryCodesIndexData, TwoFactorRecoveryCodesIndexErrors, TwoFactorRecoveryCodesIndexResponses, TwoFactorRecoveryCodesStoreData, TwoFactorRecoveryCodesStoreErrors, TwoFactorRecoveryCodesStoreResponses, TwoFactorSecretKeyData, TwoFactorSecretKeyErrors, TwoFactorSecretKeyResponses, V1ApiTokensDestroyData, V1ApiTokensDestroyErrors, V1ApiTokensDestroyResponses, V1ApiTokensIndexData, V1ApiTokensIndexErrors, V1ApiTokensIndexResponses, V1ApiTokensStoreData, V1ApiTokensStoreErrors, V1ApiTokensStoreResponses, V1InvitationsDestroyData, V1InvitationsDestroyErrors, V1InvitationsDestroyResponses, V1InvitationsIndexData, V1InvitationsIndexErrors, V1InvitationsIndexResponses, V1InvitationsStoreData, V1InvitationsStoreErrors, V1InvitationsStoreResponses, V1MembershipsDestroyData, V1MembershipsDestroyErrors, V1MembershipsDestroyResponses, V1MembershipsIndexData, V1MembershipsIndexErrors, V1MembershipsIndexResponses, V1MembershipsUpdateData, V1MembershipsUpdateErrors, V1MembershipsUpdateResponses, V1ProgramsIndexData, V1ProgramsIndexErrors, V1ProgramsIndexResponses, V1ProgramsStoreData, V1ProgramsStoreErrors, V1ProgramsStoreResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -29,10 +29,6 @@ export const invitationsAccept = <ThrowOnError extends boolean = false>(options:
 
 export const v1ApiTokensIndex = <ThrowOnError extends boolean = false>(options: Options<V1ApiTokensIndexData, ThrowOnError>): RequestResult<V1ApiTokensIndexResponses, V1ApiTokensIndexErrors, ThrowOnError> => (options.client ?? client).get<V1ApiTokensIndexResponses, V1ApiTokensIndexErrors, ThrowOnError>({ url: '/v1/accounts/{account}/api-tokens', ...options });
 
-/**
- * The plaintext token is only ever available here, in `meta` — it's
- * never persisted anywhere and never appears in a later response
- */
 export const v1ApiTokensStore = <ThrowOnError extends boolean = false>(options: Options<V1ApiTokensStoreData, ThrowOnError>): RequestResult<V1ApiTokensStoreResponses, V1ApiTokensStoreErrors, ThrowOnError> => (options.client ?? client).post<V1ApiTokensStoreResponses, V1ApiTokensStoreErrors, ThrowOnError>({
     url: '/v1/accounts/{account}/api-tokens',
     ...options,
@@ -46,6 +42,8 @@ export const v1ApiTokensStore = <ThrowOnError extends boolean = false>(options: 
  * Destroy a resource
  */
 export const v1ApiTokensDestroy = <ThrowOnError extends boolean = false>(options: Options<V1ApiTokensDestroyData, ThrowOnError>): RequestResult<V1ApiTokensDestroyResponses, V1ApiTokensDestroyErrors, ThrowOnError> => (options.client ?? client).delete<V1ApiTokensDestroyResponses, V1ApiTokensDestroyErrors, ThrowOnError>({ url: '/v1/accounts/{account}/api-tokens/{api_token}', ...options });
+
+export const twoFactorConfirm = <ThrowOnError extends boolean = false>(options?: Options<TwoFactorConfirmData, ThrowOnError>): RequestResult<TwoFactorConfirmResponses, TwoFactorConfirmErrors, ThrowOnError> => (options?.client ?? client).post<TwoFactorConfirmResponses, TwoFactorConfirmErrors, ThrowOnError>({ url: '/confirmed-two-factor-authentication', ...options });
 
 export const passwordEmail = <ThrowOnError extends boolean = false>(options: Options<PasswordEmailData, ThrowOnError>): RequestResult<PasswordEmailResponses, PasswordEmailErrors, ThrowOnError> => (options.client ?? client).post<PasswordEmailResponses, PasswordEmailErrors, ThrowOnError>({
     url: '/forgot-password',
@@ -126,3 +124,24 @@ export const passwordUpdate = <ThrowOnError extends boolean = false>(options: Op
         ...options.headers
     }
 });
+
+export const twoFactorDisable = <ThrowOnError extends boolean = false>(options?: Options<TwoFactorDisableData, ThrowOnError>): RequestResult<TwoFactorDisableResponses, TwoFactorDisableErrors, ThrowOnError> => (options?.client ?? client).delete<TwoFactorDisableResponses, TwoFactorDisableErrors, ThrowOnError>({ url: '/two-factor-authentication', ...options });
+
+export const twoFactorEnable = <ThrowOnError extends boolean = false>(options?: Options<TwoFactorEnableData, ThrowOnError>): RequestResult<TwoFactorEnableResponses, TwoFactorEnableErrors, ThrowOnError> => (options?.client ?? client).post<TwoFactorEnableResponses, TwoFactorEnableErrors, ThrowOnError>({ url: '/two-factor-authentication', ...options });
+
+export const twoFactorChallenge = <ThrowOnError extends boolean = false>(options?: Options<TwoFactorChallengeData, ThrowOnError>): RequestResult<TwoFactorChallengeResponses, TwoFactorChallengeErrors, ThrowOnError> => (options?.client ?? client).post<TwoFactorChallengeResponses, TwoFactorChallengeErrors, ThrowOnError>({
+    url: '/two-factor-challenge',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
+
+export const twoFactorQrCode = <ThrowOnError extends boolean = false>(options?: Options<TwoFactorQrCodeData, ThrowOnError>): RequestResult<TwoFactorQrCodeResponses, TwoFactorQrCodeErrors, ThrowOnError> => (options?.client ?? client).get<TwoFactorQrCodeResponses, TwoFactorQrCodeErrors, ThrowOnError>({ url: '/two-factor-qr-code', ...options });
+
+export const twoFactorRecoveryCodesIndex = <ThrowOnError extends boolean = false>(options?: Options<TwoFactorRecoveryCodesIndexData, ThrowOnError>): RequestResult<TwoFactorRecoveryCodesIndexResponses, TwoFactorRecoveryCodesIndexErrors, ThrowOnError> => (options?.client ?? client).get<TwoFactorRecoveryCodesIndexResponses, TwoFactorRecoveryCodesIndexErrors, ThrowOnError>({ url: '/two-factor-recovery-codes', ...options });
+
+export const twoFactorRecoveryCodesStore = <ThrowOnError extends boolean = false>(options?: Options<TwoFactorRecoveryCodesStoreData, ThrowOnError>): RequestResult<TwoFactorRecoveryCodesStoreResponses, TwoFactorRecoveryCodesStoreErrors, ThrowOnError> => (options?.client ?? client).post<TwoFactorRecoveryCodesStoreResponses, TwoFactorRecoveryCodesStoreErrors, ThrowOnError>({ url: '/two-factor-recovery-codes', ...options });
+
+export const twoFactorSecretKey = <ThrowOnError extends boolean = false>(options?: Options<TwoFactorSecretKeyData, ThrowOnError>): RequestResult<TwoFactorSecretKeyResponses, TwoFactorSecretKeyErrors, ThrowOnError> => (options?.client ?? client).get<TwoFactorSecretKeyResponses, TwoFactorSecretKeyErrors, ThrowOnError>({ url: '/two-factor-secret-key', ...options });

@@ -6,10 +6,6 @@ export type ClientOptions = {
 
 /**
  * AcceptInvitationRequest
- *
- * `name`/`password` are only required when the invited email has no
- * existing User yet — AcceptInvitationController decides that (it needs a
- * DB lookup the request itself shouldn't own) and enforces it explicitly.
  */
 export type AcceptInvitationRequest = {
     name?: string;
@@ -50,6 +46,14 @@ export type ResetPasswordRequest = {
     email: string;
     password: string;
     password_confirmation: string;
+};
+
+/**
+ * TwoFactorLoginRequest
+ */
+export type TwoFactorLoginRequest = {
+    code?: string | null;
+    recovery_code?: string | null;
 };
 
 export type InvitationsAcceptData = {
@@ -260,6 +264,36 @@ export type V1ApiTokensDestroyResponses = {
 };
 
 export type V1ApiTokensDestroyResponse = V1ApiTokensDestroyResponses[keyof V1ApiTokensDestroyResponses];
+
+export type TwoFactorConfirmData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/confirmed-two-factor-authentication';
+};
+
+export type TwoFactorConfirmErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type TwoFactorConfirmError = TwoFactorConfirmErrors[keyof TwoFactorConfirmErrors];
+
+export type TwoFactorConfirmResponses = {
+    /**
+     * No content
+     */
+    204: void;
+};
+
+export type TwoFactorConfirmResponse = TwoFactorConfirmResponses[keyof TwoFactorConfirmResponses];
 
 export type PasswordEmailData = {
     body: ForgotPasswordRequest;
@@ -540,6 +574,11 @@ export type LoginErrors = {
 export type LoginError = LoginErrors[keyof LoginErrors];
 
 export type LoginResponses = {
+    200: {
+        data: {
+            twoFactorRequired: boolean;
+        };
+    };
     /**
      * No content
      */
@@ -606,6 +645,7 @@ export type MeResponses = {
                 id: number;
                 name: string;
                 email: string;
+                twoFactorEnabled: boolean;
             };
             memberships: Array<{
                 account: {
@@ -615,6 +655,7 @@ export type MeResponses = {
                 };
                 role: string;
                 permissions: Array<string>;
+                twoFactorRequired: boolean;
             }>;
         };
     };
@@ -985,3 +1026,240 @@ export type PasswordUpdateResponses = {
 };
 
 export type PasswordUpdateResponse = PasswordUpdateResponses[keyof PasswordUpdateResponses];
+
+export type TwoFactorDisableData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/two-factor-authentication';
+};
+
+export type TwoFactorDisableErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type TwoFactorDisableError = TwoFactorDisableErrors[keyof TwoFactorDisableErrors];
+
+export type TwoFactorDisableResponses = {
+    /**
+     * No content
+     */
+    204: void;
+};
+
+export type TwoFactorDisableResponse = TwoFactorDisableResponses[keyof TwoFactorDisableResponses];
+
+export type TwoFactorEnableData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/two-factor-authentication';
+};
+
+export type TwoFactorEnableErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type TwoFactorEnableError = TwoFactorEnableErrors[keyof TwoFactorEnableErrors];
+
+export type TwoFactorEnableResponses = {
+    /**
+     * No content
+     */
+    204: void;
+};
+
+export type TwoFactorEnableResponse = TwoFactorEnableResponses[keyof TwoFactorEnableResponses];
+
+export type TwoFactorChallengeData = {
+    body?: TwoFactorLoginRequest;
+    path?: never;
+    query?: never;
+    url: '/two-factor-challenge';
+};
+
+export type TwoFactorChallengeErrors = {
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type TwoFactorChallengeError = TwoFactorChallengeErrors[keyof TwoFactorChallengeErrors];
+
+export type TwoFactorChallengeResponses = {
+    /**
+     * No content
+     */
+    204: void;
+};
+
+export type TwoFactorChallengeResponse = TwoFactorChallengeResponses[keyof TwoFactorChallengeResponses];
+
+export type TwoFactorQrCodeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/two-factor-qr-code';
+};
+
+export type TwoFactorQrCodeErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Not found
+     */
+    404: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type TwoFactorQrCodeError = TwoFactorQrCodeErrors[keyof TwoFactorQrCodeErrors];
+
+export type TwoFactorQrCodeResponses = {
+    200: {
+        data: {
+            svg: string;
+            url: string;
+        };
+    };
+};
+
+export type TwoFactorQrCodeResponse = TwoFactorQrCodeResponses[keyof TwoFactorQrCodeResponses];
+
+export type TwoFactorRecoveryCodesIndexData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/two-factor-recovery-codes';
+};
+
+export type TwoFactorRecoveryCodesIndexErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type TwoFactorRecoveryCodesIndexError = TwoFactorRecoveryCodesIndexErrors[keyof TwoFactorRecoveryCodesIndexErrors];
+
+export type TwoFactorRecoveryCodesIndexResponses = {
+    200: {
+        data: Array<unknown>;
+    } | {
+        data: Array<string>;
+    };
+};
+
+export type TwoFactorRecoveryCodesIndexResponse = TwoFactorRecoveryCodesIndexResponses[keyof TwoFactorRecoveryCodesIndexResponses];
+
+export type TwoFactorRecoveryCodesStoreData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/two-factor-recovery-codes';
+};
+
+export type TwoFactorRecoveryCodesStoreErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type TwoFactorRecoveryCodesStoreError = TwoFactorRecoveryCodesStoreErrors[keyof TwoFactorRecoveryCodesStoreErrors];
+
+export type TwoFactorRecoveryCodesStoreResponses = {
+    200: {
+        data: Array<unknown>;
+    };
+};
+
+export type TwoFactorRecoveryCodesStoreResponse = TwoFactorRecoveryCodesStoreResponses[keyof TwoFactorRecoveryCodesStoreResponses];
+
+export type TwoFactorSecretKeyData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/two-factor-secret-key';
+};
+
+export type TwoFactorSecretKeyErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+    /**
+     * Not found
+     */
+    404: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type TwoFactorSecretKeyError = TwoFactorSecretKeyErrors[keyof TwoFactorSecretKeyErrors];
+
+export type TwoFactorSecretKeyResponses = {
+    200: {
+        data: {
+            secretKey: unknown;
+        };
+    };
+};
+
+export type TwoFactorSecretKeyResponse = TwoFactorSecretKeyResponses[keyof TwoFactorSecretKeyResponses];
