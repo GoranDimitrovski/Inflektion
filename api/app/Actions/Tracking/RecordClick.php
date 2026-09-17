@@ -18,6 +18,8 @@ final class RecordClick
     public function handle(Link $link, ?string $ipAddress, ?string $userAgent): Click
     {
         return DB::transaction(fn (): Click => Click::create([
+
+            'account_id' => $link->account_id,
             'link_id' => $link->id,
             'ip_address' => $ipAddress,
             'user_agent' => $userAgent,

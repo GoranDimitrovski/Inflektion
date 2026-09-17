@@ -4,16 +4,23 @@ declare(strict_types=1);
 
 namespace App\JsonApi\V1;
 
+use App\JsonApi\V1\ApiTokens\ApiTokenSchema;
+use App\JsonApi\V1\Invitations\InvitationSchema;
+use App\JsonApi\V1\Memberships\MembershipSchema;
 use App\JsonApi\V1\Programs\ProgramSchema;
+use App\Models\Account;
 use LaravelJsonApi\Core\Server\Server as BaseServer;
 
 class Server extends BaseServer
 {
-    protected string $baseUri = '/api/v1';
+    public function serving(): void {}
 
-    public function serving(): void
+    protected function baseUri(): string
     {
-        // no-op
+        $account = request()->route('account');
+        $accountId = $account instanceof Account ? $account->getRouteKey() : $account;
+
+        return "/api/v1/accounts/{$accountId}";
     }
 
     /**
@@ -23,6 +30,9 @@ class Server extends BaseServer
     {
         return [
             ProgramSchema::class,
+            InvitationSchema::class,
+            MembershipSchema::class,
+            ApiTokenSchema::class,
         ];
     }
 }

@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { v1ProgramsIndex, v1ProgramsStore } from '../../api/sdk.gen';
 import type { V1ProgramsIndexResponses, V1ProgramsStoreData } from '../../api/types.gen';
+import { firstApiError } from '../../shared/api-error';
 
 /** A single `programs` resource object, JSON:API-shaped (`data.attributes.*`). */
 export type ProgramResource = V1ProgramsIndexResponses[200]['data'][number];
@@ -8,25 +9,23 @@ export type ProgramResource = V1ProgramsIndexResponses[200]['data'][number];
 /** The `data.attributes` payload needed to create a program. */
 export type CreateProgramAttributes = V1ProgramsStoreData['body']['data']['attributes'];
 
-/**
- * Route-scoped facade wrapping the generated API client with signals.
- * No NgRx / global store per project rules — this is local state for the
- * `features/programs` route only.
- */
+/** No NgRx / global store per project rules — this is local state for the `features/programs` route only. */
 @Injectable()
 export class ProgramsFacade {
   readonly programs = signal<ProgramResource[]>([]);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  async load(): Promise<void> {
+  async load(accountId: number): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
 
-    const { data, error } = await v1ProgramsIndex();
+    const { data, error } = await v1ProgramsIndex({
+      path: { account: String(accountId) },
+    });
 
     if (error) {
-      this.error.set('Failed to load programs.');
+      this.error.set(firstApiError(error, 'Failed to load programs.'));
     } else if (data) {
       this.programs.set(data.data);
     }
@@ -34,10 +33,11 @@ export class ProgramsFacade {
     this.loading.set(false);
   }
 
-  async create(attributes: CreateProgramAttributes): Promise<boolean> {
+  async create(accountId: number, attributes: CreateProgramAttributes): Promise<boolean> {
     this.error.set(null);
 
     const { data, error } = await v1ProgramsStore({
+      path: { account: String(accountId) },
       body: { data: { type: 'programs', attributes } },
       // The generated SDK hardcodes "Content-Type: application/json" on
       // every store call; JSON:API requires the vendor media type instead.
@@ -45,7 +45,7 @@ export class ProgramsFacade {
     });
 
     if (error) {
-      this.error.set('Failed to create program.');
+      this.error.set(firstApiError(error, 'Failed to create program.'));
 
       return false;
     }

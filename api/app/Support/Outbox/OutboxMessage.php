@@ -6,14 +6,6 @@ namespace App\Support\Outbox;
 
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * @property int $id
- * @property string $aggregate_type
- * @property string $aggregate_id
- * @property string $event_type
- * @property array<string, mixed> $payload
- * @property \DateTimeInterface|null $published_at
- */
 final class OutboxMessage extends Model
 {
     public $timestamps = false;

@@ -19,9 +19,6 @@ final class WriteCommission
         private readonly Clock $clock,
     ) {}
 
-    /**
-     * @throws LogicException
-     */
     public function handle(Conversion $conversion): CommissionLedgerEntry
     {
         if ($conversion->attributed_program_id === null) {
@@ -37,6 +34,7 @@ final class WriteCommission
             $amount = $strategy->calculate($conversion, $program);
 
             $entry = CommissionLedgerEntry::create([
+                'account_id' => $program->account_id,
                 'conversion_id' => $conversion->id,
                 'program_id' => $program->id,
                 'amount' => $amount,

@@ -13,16 +13,12 @@ final class StorefrontAdapterRegistry
         private readonly array $adapters,
     ) {}
 
-    /**
-     * @throws UnknownStorefrontVendorException
-     */
     public function resolve(string $vendor): StorefrontAdapter
     {
         if (! isset($this->adapters[$vendor])) {
             throw new UnknownStorefrontVendorException($vendor);
         }
 
-        /** @var StorefrontAdapter */
         return app($this->adapters[$vendor]);
     }
 }

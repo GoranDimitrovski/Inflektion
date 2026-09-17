@@ -45,6 +45,7 @@ final class CommissionLedgerEntryTest extends TestCase
     {
         $program = Program::factory()->create();
         $conversion = Conversion::create([
+            'account_id' => $program->account_id,
             'vendor' => 'demo-store',
             'external_id' => 'ledger-append-only-'.uniqid(),
             'amount' => Money::of(1000, 'USD'),
@@ -53,6 +54,7 @@ final class CommissionLedgerEntryTest extends TestCase
         ]);
 
         return CommissionLedgerEntry::create([
+            'account_id' => $program->account_id,
             'conversion_id' => $conversion->id,
             'program_id' => $program->id,
             'amount' => Money::of(100, 'USD'),

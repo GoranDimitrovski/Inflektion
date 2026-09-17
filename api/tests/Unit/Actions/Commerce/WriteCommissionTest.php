@@ -28,6 +28,7 @@ final class WriteCommissionTest extends TestCase
         ]);
 
         $conversion = Conversion::create([
+            'account_id' => $program->account_id,
             'vendor' => 'demo-store',
             'external_id' => 'write-commission-flow',
             'amount' => Money::of(10000, 'USD'),
@@ -41,8 +42,10 @@ final class WriteCommissionTest extends TestCase
         $this->assertTrue($entry->amount->equals(Money::of(1000, 'USD')));
         $this->assertSame($conversion->id, $entry->conversion_id);
         $this->assertSame($program->id, $entry->program_id);
+        $this->assertSame($program->account_id, $entry->account_id);
 
         $this->assertDatabaseHas('commission_ledger_entries', [
+            'account_id' => $program->account_id,
             'conversion_id' => $conversion->id,
             'program_id' => $program->id,
             'amount_minor_units' => 1000,

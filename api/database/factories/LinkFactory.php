@@ -23,6 +23,7 @@ final class LinkFactory extends Factory
     {
         return [
             'program_id' => Program::factory(),
+            'account_id' => fn (array $attributes): int => Program::query()->findOrFail($attributes['program_id'])->account_id,
             'destination_url' => fake()->url(),
             'token' => Str::random(10),
             'status' => 'active',

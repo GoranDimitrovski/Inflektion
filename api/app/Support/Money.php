@@ -6,10 +6,6 @@ namespace App\Support;
 
 use InvalidArgumentException;
 
-/**
- * Immutable money value object: integer minor units (e.g. cents) + ISO 4217 currency code.
- * No floats, ever — float arithmetic on money is a bug generator.
- */
 final class Money
 {
     public function __construct(

@@ -11,6 +11,9 @@ use App\Support\Money;
 
 final class DemoStoreAdapter implements StorefrontAdapter
 {
+    /**
+     * @param  array<string, mixed>  $payload
+     */
     public function parsePostback(array $payload): PostbackData
     {
         $this->assertRequiredFields($payload);

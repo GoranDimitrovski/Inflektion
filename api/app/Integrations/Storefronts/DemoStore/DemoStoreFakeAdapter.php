@@ -11,6 +11,9 @@ use App\Support\Money;
 
 final class DemoStoreFakeAdapter implements StorefrontAdapter
 {
+    /**
+     * @param  array<string, mixed>  $payload
+     */
     public function parsePostback(array $payload): PostbackData
     {
         foreach (['order_id', 'sub_id', 'amount', 'currency', 'event'] as $field) {

@@ -54,9 +54,8 @@ class ProgramSchema extends Schema
         return PagePagination::make()->withDefaultPerPage(25);
     }
 
-    // No auth/policy system yet; revisit once Program gets a Policy.
     public function authorizable(): bool
     {
-        return false;
+        return true;
     }
 }

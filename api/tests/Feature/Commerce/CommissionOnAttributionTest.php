@@ -27,6 +27,7 @@ final class CommissionOnAttributionTest extends TestCase
         ]);
 
         $click = Click::create([
+            'account_id' => $link->account_id,
             'link_id' => $link->id,
             'ip_address' => '127.0.0.1',
             'user_agent' => 'phpunit',

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\Account;
 use App\Models\Program;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
@@ -19,7 +20,9 @@ final class ProgramsTest extends TestCase
     #[Test]
     public function itCreatesAProgram(): void
     {
-        $response = $this->postJsonApi('/api/v1/programs', [
+        $account = $this->actingAsAccountMember();
+
+        $response = $this->postJsonApi($account, [
             'name' => 'Acme Affiliates',
             'slug' => 'acme-affiliates',
         ]);
@@ -30,9 +33,13 @@ final class ProgramsTest extends TestCase
         $response->assertJsonPath('data.attributes.name', 'Acme Affiliates');
         $response->assertJsonPath('data.attributes.slug', 'acme-affiliates');
         $response->assertJsonPath('data.attributes.status', 'draft');
-        $response->assertJsonPath('data.links.self', fn (string $self): bool => str_ends_with($self, '/api/v1/programs/'.$response->json('data.id')));
+        $response->assertJsonPath(
+            'data.links.self',
+            fn (string $self): bool => str_ends_with($self, "/api/v1/accounts/{$account->id}/programs/".$response->json('data.id')),
+        );
 
         $this->assertDatabaseHas('programs', [
+            'account_id' => $account->id,
             'slug' => 'acme-affiliates',
             'name' => 'Acme Affiliates',
         ]);
@@ -41,7 +48,9 @@ final class ProgramsTest extends TestCase
     #[Test]
     public function itCreatesAProgramWithACommissionStrategy(): void
     {
-        $response = $this->postJsonApi('/api/v1/programs', [
+        $account = $this->actingAsAccountMember();
+
+        $response = $this->postJsonApi($account, [
             'name' => 'Acme Affiliates',
             'slug' => 'acme-percentage',
             'commissionStrategy' => 'percentage',
@@ -53,6 +62,7 @@ final class ProgramsTest extends TestCase
         $response->assertJsonPath('data.attributes.commissionRate', '0.1000');
 
         $this->assertDatabaseHas('programs', [
+            'account_id' => $account->id,
             'slug' => 'acme-percentage',
             'commission_strategy' => 'percentage',
         ]);
@@ -61,7 +71,9 @@ final class ProgramsTest extends TestCase
     #[Test]
     public function itRequiresACommissionRateWhenTheStrategyIsPercentage(): void
     {
-        $response = $this->postJsonApi('/api/v1/programs', [
+        $account = $this->actingAsAccountMember();
+
+        $response = $this->postJsonApi($account, [
             'name' => 'Acme Affiliates',
             'slug' => 'acme-missing-rate',
             'commissionStrategy' => 'percentage',
@@ -74,9 +86,11 @@ final class ProgramsTest extends TestCase
     #[Test]
     public function itRejectsADuplicateSlugWithAJsonApiErrorDocument(): void
     {
-        Program::create(['name' => 'Acme', 'slug' => 'acme', 'status' => 'draft']);
+        $account = $this->actingAsAccountMember();
 
-        $response = $this->postJsonApi('/api/v1/programs', [
+        Program::factory()->for($account)->create(['name' => 'Acme', 'slug' => 'acme']);
+
+        $response = $this->postJsonApi($account, [
             'name' => 'Acme Again',
             'slug' => 'acme',
         ]);
@@ -91,9 +105,11 @@ final class ProgramsTest extends TestCase
     #[Test]
     public function itListsPrograms(): void
     {
-        Program::factory()->count(3)->create();
+        $account = $this->actingAsAccountMember();
 
-        $response = $this->getJson('/api/v1/programs', [
+        Program::factory()->for($account)->count(3)->create();
+
+        $response = $this->getJson("/api/v1/accounts/{$account->id}/programs", [
             'Accept' => self::JSON_API_MEDIA_TYPE,
         ]);
 
@@ -109,9 +125,54 @@ final class ProgramsTest extends TestCase
         ]);
     }
 
-    private function postJsonApi(string $uri, array $attributes): TestResponse
+    #[Test]
+    public function itNeverReturnsAnotherAccountsPrograms(): void
     {
-        return $this->postJson($uri, [
+        $otherAccount = Account::factory()->create();
+        Program::factory()->for($otherAccount)->count(2)->create();
+
+        $account = $this->actingAsAccountMember();
+        Program::factory()->for($account)->create();
+
+        $response = $this->getJson("/api/v1/accounts/{$account->id}/programs", [
+            'Accept' => self::JSON_API_MEDIA_TYPE,
+        ]);
+
+        $response->assertOk();
+        $response->assertJsonCount(1, 'data');
+    }
+
+    #[Test]
+    public function itReturns404ForAnAccountTheCallerIsNotAMemberOf(): void
+    {
+        $this->actingAsAccountMember();
+        $otherAccount = Account::factory()->create();
+
+        $response = $this->getJson("/api/v1/accounts/{$otherAccount->id}/programs", [
+            'Accept' => self::JSON_API_MEDIA_TYPE,
+        ]);
+
+        $response->assertNotFound();
+    }
+
+    #[Test]
+    public function itReturns401ForAnUnauthenticatedRequest(): void
+    {
+        $account = Account::factory()->create();
+
+        $response = $this->getJson("/api/v1/accounts/{$account->id}/programs", [
+            'Accept' => self::JSON_API_MEDIA_TYPE,
+        ]);
+
+        $response->assertUnauthorized();
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    private function postJsonApi(Account $account, array $attributes): TestResponse
+    {
+        return $this->postJson("/api/v1/accounts/{$account->id}/programs", [
             'data' => [
                 'type' => 'programs',
                 'attributes' => $attributes,

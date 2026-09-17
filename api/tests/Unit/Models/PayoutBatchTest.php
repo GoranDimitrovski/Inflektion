@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
+use App\Models\Account;
 use App\Models\PayoutBatch;
 use DateTimeImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,7 +19,11 @@ final class PayoutBatchTest extends TestCase
     #[Test]
     public function itClosesAnOpenBatchRecordingClosedAtAndFlippingItsStatus(): void
     {
-        $batch = PayoutBatch::create(['status' => PayoutBatch::STATUS_OPEN, 'opened_at' => now()]);
+        $batch = PayoutBatch::create([
+            'account_id' => Account::factory()->create()->id,
+            'status' => PayoutBatch::STATUS_OPEN,
+            'opened_at' => now(),
+        ]);
 
         $closedAt = new DateTimeImmutable('2030-01-01T00:00:00+00:00');
         $batch->close($closedAt);
@@ -32,6 +37,7 @@ final class PayoutBatchTest extends TestCase
     public function itRefusesToCloseAnAlreadyClosedBatch(): void
     {
         $batch = PayoutBatch::create([
+            'account_id' => Account::factory()->create()->id,
             'status' => PayoutBatch::STATUS_CLOSED,
             'opened_at' => now(),
             'closed_at' => now(),

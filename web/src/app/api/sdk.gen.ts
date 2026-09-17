@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { PostbacksAcceptData, PostbacksAcceptErrors, PostbacksAcceptResponses, V1ProgramsIndexData, V1ProgramsIndexResponses, V1ProgramsStoreData, V1ProgramsStoreResponses } from './types.gen';
+import type { AccountsLeaveData, AccountsLeaveErrors, AccountsLeaveResponses, InvitationsAcceptData, InvitationsAcceptErrors, InvitationsAcceptResponses, InvitationsShowData, InvitationsShowErrors, InvitationsShowResponses, LoginData, LoginErrors, LoginResponses, LogoutData, LogoutErrors, LogoutResponses, MeData, MeErrors, MeResponses, PasswordEmailData, PasswordEmailErrors, PasswordEmailResponses, PasswordUpdateData, PasswordUpdateErrors, PasswordUpdateResponses, PostbacksAcceptData, PostbacksAcceptErrors, PostbacksAcceptResponses, V1ApiTokensDestroyData, V1ApiTokensDestroyErrors, V1ApiTokensDestroyResponses, V1ApiTokensIndexData, V1ApiTokensIndexErrors, V1ApiTokensIndexResponses, V1ApiTokensStoreData, V1ApiTokensStoreErrors, V1ApiTokensStoreResponses, V1InvitationsDestroyData, V1InvitationsDestroyErrors, V1InvitationsDestroyResponses, V1InvitationsIndexData, V1InvitationsIndexErrors, V1InvitationsIndexResponses, V1InvitationsStoreData, V1InvitationsStoreErrors, V1InvitationsStoreResponses, V1MembershipsDestroyData, V1MembershipsDestroyErrors, V1MembershipsDestroyResponses, V1MembershipsIndexData, V1MembershipsIndexErrors, V1MembershipsIndexResponses, V1MembershipsUpdateData, V1MembershipsUpdateErrors, V1MembershipsUpdateResponses, V1ProgramsIndexData, V1ProgramsIndexErrors, V1ProgramsIndexResponses, V1ProgramsStoreData, V1ProgramsStoreErrors, V1ProgramsStoreResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -18,12 +18,108 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
     meta?: keyof ClientMeta extends never ? Record<string, unknown> : ClientMeta;
 };
 
+export const invitationsAccept = <ThrowOnError extends boolean = false>(options: Options<InvitationsAcceptData, ThrowOnError>): RequestResult<InvitationsAcceptResponses, InvitationsAcceptErrors, ThrowOnError> => (options.client ?? client).post<InvitationsAcceptResponses, InvitationsAcceptErrors, ThrowOnError>({
+    url: '/invitations/{token}/accept',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const v1ApiTokensIndex = <ThrowOnError extends boolean = false>(options: Options<V1ApiTokensIndexData, ThrowOnError>): RequestResult<V1ApiTokensIndexResponses, V1ApiTokensIndexErrors, ThrowOnError> => (options.client ?? client).get<V1ApiTokensIndexResponses, V1ApiTokensIndexErrors, ThrowOnError>({ url: '/v1/accounts/{account}/api-tokens', ...options });
+
+/**
+ * The plaintext token is only ever available here, in `meta` — it's
+ * never persisted anywhere and never appears in a later response
+ */
+export const v1ApiTokensStore = <ThrowOnError extends boolean = false>(options: Options<V1ApiTokensStoreData, ThrowOnError>): RequestResult<V1ApiTokensStoreResponses, V1ApiTokensStoreErrors, ThrowOnError> => (options.client ?? client).post<V1ApiTokensStoreResponses, V1ApiTokensStoreErrors, ThrowOnError>({
+    url: '/v1/accounts/{account}/api-tokens',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Destroy a resource
+ */
+export const v1ApiTokensDestroy = <ThrowOnError extends boolean = false>(options: Options<V1ApiTokensDestroyData, ThrowOnError>): RequestResult<V1ApiTokensDestroyResponses, V1ApiTokensDestroyErrors, ThrowOnError> => (options.client ?? client).delete<V1ApiTokensDestroyResponses, V1ApiTokensDestroyErrors, ThrowOnError>({ url: '/v1/accounts/{account}/api-tokens/{api_token}', ...options });
+
+export const passwordEmail = <ThrowOnError extends boolean = false>(options: Options<PasswordEmailData, ThrowOnError>): RequestResult<PasswordEmailResponses, PasswordEmailErrors, ThrowOnError> => (options.client ?? client).post<PasswordEmailResponses, PasswordEmailErrors, ThrowOnError>({
+    url: '/forgot-password',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const v1InvitationsIndex = <ThrowOnError extends boolean = false>(options: Options<V1InvitationsIndexData, ThrowOnError>): RequestResult<V1InvitationsIndexResponses, V1InvitationsIndexErrors, ThrowOnError> => (options.client ?? client).get<V1InvitationsIndexResponses, V1InvitationsIndexErrors, ThrowOnError>({ url: '/v1/accounts/{account}/invitations', ...options });
+
+export const v1InvitationsStore = <ThrowOnError extends boolean = false>(options: Options<V1InvitationsStoreData, ThrowOnError>): RequestResult<V1InvitationsStoreResponses, V1InvitationsStoreErrors, ThrowOnError> => (options.client ?? client).post<V1InvitationsStoreResponses, V1InvitationsStoreErrors, ThrowOnError>({
+    url: '/v1/accounts/{account}/invitations',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Destroy a resource
+ */
+export const v1InvitationsDestroy = <ThrowOnError extends boolean = false>(options: Options<V1InvitationsDestroyData, ThrowOnError>): RequestResult<V1InvitationsDestroyResponses, V1InvitationsDestroyErrors, ThrowOnError> => (options.client ?? client).delete<V1InvitationsDestroyResponses, V1InvitationsDestroyErrors, ThrowOnError>({ url: '/v1/accounts/{account}/invitations/{invitation}', ...options });
+
+export const invitationsShow = <ThrowOnError extends boolean = false>(options: Options<InvitationsShowData, ThrowOnError>): RequestResult<InvitationsShowResponses, InvitationsShowErrors, ThrowOnError> => (options.client ?? client).get<InvitationsShowResponses, InvitationsShowErrors, ThrowOnError>({ url: '/invitations/{token}', ...options });
+
+export const accountsLeave = <ThrowOnError extends boolean = false>(options: Options<AccountsLeaveData, ThrowOnError>): RequestResult<AccountsLeaveResponses, AccountsLeaveErrors, ThrowOnError> => (options.client ?? client).delete<AccountsLeaveResponses, AccountsLeaveErrors, ThrowOnError>({ url: '/v1/accounts/{account}/me/membership', ...options });
+
+export const login = <ThrowOnError extends boolean = false>(options: Options<LoginData, ThrowOnError>): RequestResult<LoginResponses, LoginErrors, ThrowOnError> => (options.client ?? client).post<LoginResponses, LoginErrors, ThrowOnError>({
+    url: '/login',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const logout = <ThrowOnError extends boolean = false>(options?: Options<LogoutData, ThrowOnError>): RequestResult<LogoutResponses, LogoutErrors, ThrowOnError> => (options?.client ?? client).delete<LogoutResponses, LogoutErrors, ThrowOnError>({ url: '/logout', ...options });
+
+export const me = <ThrowOnError extends boolean = false>(options?: Options<MeData, ThrowOnError>): RequestResult<MeResponses, MeErrors, ThrowOnError> => (options?.client ?? client).get<MeResponses, MeErrors, ThrowOnError>({ url: '/me', ...options });
+
+export const v1MembershipsIndex = <ThrowOnError extends boolean = false>(options: Options<V1MembershipsIndexData, ThrowOnError>): RequestResult<V1MembershipsIndexResponses, V1MembershipsIndexErrors, ThrowOnError> => (options.client ?? client).get<V1MembershipsIndexResponses, V1MembershipsIndexErrors, ThrowOnError>({ url: '/v1/accounts/{account}/memberships', ...options });
+
+/**
+ * Destroy a resource
+ */
+export const v1MembershipsDestroy = <ThrowOnError extends boolean = false>(options: Options<V1MembershipsDestroyData, ThrowOnError>): RequestResult<V1MembershipsDestroyResponses, V1MembershipsDestroyErrors, ThrowOnError> => (options.client ?? client).delete<V1MembershipsDestroyResponses, V1MembershipsDestroyErrors, ThrowOnError>({ url: '/v1/accounts/{account}/memberships/{membership}', ...options });
+
+export const v1MembershipsUpdate = <ThrowOnError extends boolean = false>(options: Options<V1MembershipsUpdateData, ThrowOnError>): RequestResult<V1MembershipsUpdateResponses, V1MembershipsUpdateErrors, ThrowOnError> => (options.client ?? client).patch<V1MembershipsUpdateResponses, V1MembershipsUpdateErrors, ThrowOnError>({
+    url: '/v1/accounts/{account}/memberships/{membership}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
 export const postbacksAccept = <ThrowOnError extends boolean = false>(options: Options<PostbacksAcceptData, ThrowOnError>): RequestResult<PostbacksAcceptResponses, PostbacksAcceptErrors, ThrowOnError> => (options.client ?? client).post<PostbacksAcceptResponses, PostbacksAcceptErrors, ThrowOnError>({ url: '/v1/postbacks/{vendor}', ...options });
 
-export const v1ProgramsIndex = <ThrowOnError extends boolean = false>(options?: Options<V1ProgramsIndexData, ThrowOnError>): RequestResult<V1ProgramsIndexResponses, unknown, ThrowOnError> => (options?.client ?? client).get<V1ProgramsIndexResponses, unknown, ThrowOnError>({ url: '/v1/programs', ...options });
+export const v1ProgramsIndex = <ThrowOnError extends boolean = false>(options: Options<V1ProgramsIndexData, ThrowOnError>): RequestResult<V1ProgramsIndexResponses, V1ProgramsIndexErrors, ThrowOnError> => (options.client ?? client).get<V1ProgramsIndexResponses, V1ProgramsIndexErrors, ThrowOnError>({ url: '/v1/accounts/{account}/programs', ...options });
 
-export const v1ProgramsStore = <ThrowOnError extends boolean = false>(options: Options<V1ProgramsStoreData, ThrowOnError>): RequestResult<V1ProgramsStoreResponses, unknown, ThrowOnError> => (options.client ?? client).post<V1ProgramsStoreResponses, unknown, ThrowOnError>({
-    url: '/v1/programs',
+export const v1ProgramsStore = <ThrowOnError extends boolean = false>(options: Options<V1ProgramsStoreData, ThrowOnError>): RequestResult<V1ProgramsStoreResponses, V1ProgramsStoreErrors, ThrowOnError> => (options.client ?? client).post<V1ProgramsStoreResponses, V1ProgramsStoreErrors, ThrowOnError>({
+    url: '/v1/accounts/{account}/programs',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const passwordUpdate = <ThrowOnError extends boolean = false>(options: Options<PasswordUpdateData, ThrowOnError>): RequestResult<PasswordUpdateResponses, PasswordUpdateErrors, ThrowOnError> => (options.client ?? client).post<PasswordUpdateResponses, PasswordUpdateErrors, ThrowOnError>({
+    url: '/reset-password',
     ...options,
     headers: {
         'Content-Type': 'application/json',

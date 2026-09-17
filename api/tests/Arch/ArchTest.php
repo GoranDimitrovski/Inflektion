@@ -13,13 +13,18 @@ use Tests\TestCase;
 final class ArchTest extends TestCase
 {
     #[Test]
-    public function noLedgerModelFileContainsAnUpdateOrDeleteCall(): void
+    public function noAppendOnlyModelFileContainsAnUpdateOrDeleteCall(): void
     {
-        $ledgerFiles = glob(app_path('Models/*Ledger*.php')) ?: [];
+        $appendOnlyFiles = [
+            ...glob(app_path('Models/*Ledger*.php')) ?: [],
+            app_path('Access/AuditEntry.php'),
+        ];
 
-        $this->assertNotEmpty($ledgerFiles);
+        $this->assertNotEmpty($appendOnlyFiles);
 
-        foreach ($ledgerFiles as $file) {
+        foreach ($appendOnlyFiles as $file) {
+            $this->assertFileExists($file);
+
             $contents = file_get_contents($file);
 
             $this->assertStringNotContainsString('->update(', $contents);
@@ -122,6 +127,36 @@ final class ArchTest extends TestCase
 
             $this->assertDoesNotMatchRegularExpression('/\bmatch\s*\(/', file_get_contents($file));
         }
+    }
+
+    #[Test]
+    public function noActionFileChecksPermissions(): void
+    {
+        // Actions assume the caller was already authorized (by a Policy,
+        // checked in the controller or `can:` middleware) — that keeps the
+        // check in one place instead of being half-skipped by a second
+        // caller. Actions may still consult TenantContext for *which*
+        // account something happens in; that's not a permission check.
+        foreach ($this->phpFilesUnder(app_path('Actions')) as $file) {
+            $contents = file_get_contents($file);
+
+            $this->assertDoesNotMatchRegularExpression('/\bGate::/', $contents);
+            $this->assertDoesNotMatchRegularExpression('/->can\(/', $contents);
+            $this->assertDoesNotMatchRegularExpression('/->authorize\(/', $contents);
+        }
+    }
+
+    #[Test]
+    public function accessIsOnlyUsedInAccessHttpActionsPoliciesModelsProvidersOrJsonApi(): void
+    {
+        // App\Models is here for BelongsToTenant specifically (it reads
+        // TenantContext to scope the query) — not a general exemption for
+        // models to reach into Access for anything else. App\JsonApi is here
+        // because Request/Schema classes validate and serialize against
+        // Role (e.g. InvitationRequest, MembershipSchema) — the same kind
+        // of domain-enum reference ProgramRequest already makes to
+        // App\Commissions for its commission-strategy validation.
+        $this->assertNamespaceOnlyUsedIn('App\Access', ['App\Http', 'App\Actions', 'App\Policies', 'App\Models', 'App\Providers', 'App\JsonApi']);
     }
 
     /**

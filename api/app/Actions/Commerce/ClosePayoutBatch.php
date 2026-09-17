@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Actions\Commerce;
 
+use App\Access\AuditEntry;
 use App\Models\CommissionLedgerEntry;
 use App\Models\PayoutBatch;
+use App\Models\User;
 use App\Support\Clock;
 use App\Support\Outbox\OutboxMessage;
 use Illuminate\Support\Facades\DB;
-use LogicException;
 
 final class ClosePayoutBatch
 {
@@ -17,21 +18,15 @@ final class ClosePayoutBatch
         private readonly Clock $clock,
     ) {}
 
-    /**
-     * @throws LogicException
-     */
-    public function handle(PayoutBatch $batch): PayoutBatch
+    public function handle(PayoutBatch $batch, ?User $actor = null): PayoutBatch
     {
-        return DB::transaction(function () use ($batch): PayoutBatch {
+        return DB::transaction(function () use ($batch, $actor): PayoutBatch {
             $now = $this->clock->now();
 
             $batch->close($now);
 
-            // Purely additive: a batch claims entries by inserting rows into the
-            // join table, never by updating the ledger — payout_batch_entries has
-            // a unique constraint on commission_ledger_entry_id, so an entry can
-            // only ever be claimed once.
             $unbatchedEntryIds = CommissionLedgerEntry::query()
+                ->where('account_id', $batch->account_id)
                 ->where('created_at', '>=', $batch->opened_at)
                 ->whereNotIn('id', DB::table('payout_batch_entries')->select('commission_ledger_entry_id'))
                 ->pluck('id');
@@ -56,6 +51,8 @@ final class ClosePayoutBatch
                 ],
                 'created_at' => $now,
             ]);
+
+            AuditEntry::record($batch->account_id, $actor?->id, 'commerce.payout_batch_closed', $batch, [], $now);
 
             return $batch;
         });

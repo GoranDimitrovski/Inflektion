@@ -27,7 +27,7 @@ final class AcceptPostback
 
         try {
             $conversion = DB::transaction(function () use ($vendor, $data): Conversion {
-                // click_id is untrusted vendor text; bigint column rejects non-numeric outright.
+
                 $clickId = $data->clickId !== null && ctype_digit($data->clickId)
                     ? Click::query()->whereKey($data->clickId)->value('id')
                     : null;
@@ -41,7 +41,7 @@ final class AcceptPostback
                 ]);
             });
         } catch (UniqueConstraintViolationException) {
-            /** @var Conversion */
+
             return Conversion::query()
                 ->where('vendor', $vendor)
                 ->where('external_id', $data->externalId)

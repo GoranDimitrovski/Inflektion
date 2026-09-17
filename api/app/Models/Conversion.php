@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use App\Support\Money;
 use App\Support\MoneyCast;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
+ * @property int|null $account_id
  * @property string $vendor
  * @property string $external_id
  * @property int|null $click_id
@@ -20,7 +22,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 final class Conversion extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
+        'account_id',
         'vendor',
         'external_id',
         'click_id',
@@ -34,6 +39,14 @@ final class Conversion extends Model
         return [
             'amount' => MoneyCast::class,
         ];
+    }
+
+    /**
+     * @return BelongsTo<Account, $this>
+     */
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
     }
 
     /**

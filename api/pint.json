@@ -3,6 +3,7 @@
     "rules": {
         "php_unit_method_casing": {
             "case": "camel_case"
-        }
+        },
+        "no_superfluous_phpdoc_tags": false
     }
 }

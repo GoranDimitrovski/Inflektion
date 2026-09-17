@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use App\Support\Money;
 use App\Support\MoneyCast;
 use Illuminate\Database\Eloquent\Model;
@@ -11,10 +12,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use LogicException;
 
 /**
- * Append-only: update()/delete() are overridden below to throw. No row in
- * this table may ever be mutated or removed, at any layer, ever.
- *
  * @property int $id
+ * @property int $account_id
  * @property int $conversion_id
  * @property int $program_id
  * @property Money $amount
@@ -23,9 +22,12 @@ use LogicException;
  */
 final class CommissionLedgerEntry extends Model
 {
+    use BelongsToTenant;
+
     public $timestamps = false;
 
     protected $fillable = [
+        'account_id',
         'conversion_id',
         'program_id',
         'amount',
@@ -41,23 +43,22 @@ final class CommissionLedgerEntry extends Model
         ];
     }
 
-    /**
-     * @param  array<string, mixed>  $attributes
-     * @param  array<string, mixed>  $options
-     *
-     * @throws LogicException
-     */
     public function update(array $attributes = [], array $options = []): bool
     {
         throw new LogicException('CommissionLedgerEntry is append-only; update() is not allowed.');
     }
 
-    /**
-     * @throws LogicException
-     */
     public function delete(): ?bool
     {
         throw new LogicException('CommissionLedgerEntry is append-only; delete() is not allowed.');
+    }
+
+    /**
+     * @return BelongsTo<Account, $this>
+     */
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
     }
 
     /**

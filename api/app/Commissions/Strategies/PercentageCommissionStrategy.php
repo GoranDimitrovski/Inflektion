@@ -18,7 +18,6 @@ final class PercentageCommissionStrategy implements CommissionStrategy
             throw MisconfiguredCommissionException::missingRate($program->id);
         }
 
-        // bcmath, not float: Money explicitly forbids float arithmetic on money.
         $product = bcmul((string) $conversion->amount->minorUnits, (string) $program->commission_rate, 6);
         $minorUnits = (int) bcround($product, 0);
 

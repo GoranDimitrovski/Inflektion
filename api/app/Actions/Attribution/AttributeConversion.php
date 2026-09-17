@@ -18,19 +18,19 @@ final class AttributeConversion
         }
 
         $attributed = DB::transaction(function () use ($conversion): bool {
-            $programId = Click::query()
+            $link = Click::query()
                 ->whereKey($conversion->click_id)
                 ->with('link')
                 ->first()
-                ?->link
-                ?->program_id;
+                ?->link;
 
-            if ($programId === null) {
+            if ($link === null) {
                 return false;
             }
 
             $conversion->update([
-                'attributed_program_id' => $programId,
+                'account_id' => $link->account_id,
+                'attributed_program_id' => $link->program_id,
                 'status' => 'attributed',
             ]);
 

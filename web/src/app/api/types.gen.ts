@@ -5,6 +5,19 @@ export type ClientOptions = {
 };
 
 /**
+ * AcceptInvitationRequest
+ *
+ * `name`/`password` are only required when the invited email has no
+ * existing User yet — AcceptInvitationController decides that (it needs a
+ * DB lookup the request itself shouldn't own) and enforces it explicitly.
+ */
+export type AcceptInvitationRequest = {
+    name?: string;
+    password?: string;
+    password_confirmation?: string;
+};
+
+/**
  * ConversionResource
  */
 export type ConversionResource = {
@@ -13,6 +26,755 @@ export type ConversionResource = {
     external_id: string;
     status: string;
 };
+
+/**
+ * ForgotPasswordRequest
+ */
+export type ForgotPasswordRequest = {
+    email: string;
+};
+
+/**
+ * LoginRequest
+ */
+export type LoginRequest = {
+    email: string;
+    password: string;
+};
+
+/**
+ * ResetPasswordRequest
+ */
+export type ResetPasswordRequest = {
+    token: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+};
+
+export type InvitationsAcceptData = {
+    body?: AcceptInvitationRequest & {
+        name: string;
+        password: string;
+        password_confirmation: string;
+    };
+    path: {
+        token: string;
+    };
+    query?: never;
+    url: '/invitations/{token}/accept';
+};
+
+export type InvitationsAcceptErrors = {
+    401: {
+        message: 'An account with this email already exists. Log in, then open this invitation link again.';
+    };
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type InvitationsAcceptError = InvitationsAcceptErrors[keyof InvitationsAcceptErrors];
+
+export type InvitationsAcceptResponses = {
+    200: {
+        data: {
+            account: {
+                id: number;
+                name: string;
+                slug: string;
+            };
+            role: string;
+            permissions: Array<string>;
+        };
+    };
+};
+
+export type InvitationsAcceptResponse = InvitationsAcceptResponses[keyof InvitationsAcceptResponses];
+
+export type V1ApiTokensIndexData = {
+    body?: never;
+    path: {
+        account: string;
+    };
+    query?: never;
+    url: '/v1/accounts/{account}/api-tokens';
+};
+
+export type V1ApiTokensIndexErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1ApiTokensIndexError = V1ApiTokensIndexErrors[keyof V1ApiTokensIndexErrors];
+
+export type V1ApiTokensIndexResponses = {
+    200: {
+        data: Array<{
+            type: string;
+            id: string;
+            attributes: {
+                name: string;
+                abilities: Array<string>;
+                lastUsedAt: string | null;
+                expiresAt: string | null;
+                createdAt: string;
+            };
+            links: {
+                self: string;
+            };
+        }>;
+        links: {
+            first: string;
+            last: string;
+            prev: string | null;
+            next: string | null;
+        };
+        meta: {
+            page: {
+                currentPage: number;
+                from: number | null;
+                lastPage: number;
+                perPage: number;
+                to: number | null;
+                total: number;
+            };
+        };
+        jsonapi: {
+            version: string;
+        };
+    };
+};
+
+export type V1ApiTokensIndexResponse = V1ApiTokensIndexResponses[keyof V1ApiTokensIndexResponses];
+
+export type V1ApiTokensStoreData = {
+    body: {
+        /**
+         * The JSON:API resource object to create.
+         */
+        data: {
+            type: string;
+            attributes: {
+                name: string;
+                abilities: Array<string>;
+                expiresAt?: string;
+            };
+        };
+    };
+    path: {
+        account: string;
+    };
+    query?: never;
+    url: '/v1/accounts/{account}/api-tokens';
+};
+
+export type V1ApiTokensStoreErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1ApiTokensStoreError = V1ApiTokensStoreErrors[keyof V1ApiTokensStoreErrors];
+
+export type V1ApiTokensStoreResponses = {
+    200: {
+        data: {
+            type: string;
+            id: string;
+            attributes: {
+                name: string;
+                abilities: Array<string>;
+                lastUsedAt: string | null;
+                expiresAt: string | null;
+                createdAt: string;
+            };
+            links: {
+                self: string;
+            };
+        };
+        meta: {
+            plainTextToken: string;
+        };
+        jsonapi: {
+            version: string;
+        };
+    };
+};
+
+export type V1ApiTokensStoreResponse = V1ApiTokensStoreResponses[keyof V1ApiTokensStoreResponses];
+
+export type V1ApiTokensDestroyData = {
+    body?: never;
+    path: {
+        account: string;
+        api_token: string;
+    };
+    query?: never;
+    url: '/v1/accounts/{account}/api-tokens/{api_token}';
+};
+
+export type V1ApiTokensDestroyErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1ApiTokensDestroyError = V1ApiTokensDestroyErrors[keyof V1ApiTokensDestroyErrors];
+
+export type V1ApiTokensDestroyResponses = {
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type V1ApiTokensDestroyResponse = V1ApiTokensDestroyResponses[keyof V1ApiTokensDestroyResponses];
+
+export type PasswordEmailData = {
+    body: ForgotPasswordRequest;
+    path?: never;
+    query?: never;
+    url: '/forgot-password';
+};
+
+export type PasswordEmailErrors = {
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type PasswordEmailError = PasswordEmailErrors[keyof PasswordEmailErrors];
+
+export type PasswordEmailResponses = {
+    /**
+     * No content
+     */
+    204: void;
+};
+
+export type PasswordEmailResponse = PasswordEmailResponses[keyof PasswordEmailResponses];
+
+export type V1InvitationsIndexData = {
+    body?: never;
+    path: {
+        account: string;
+    };
+    query?: never;
+    url: '/v1/accounts/{account}/invitations';
+};
+
+export type V1InvitationsIndexErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1InvitationsIndexError = V1InvitationsIndexErrors[keyof V1InvitationsIndexErrors];
+
+export type V1InvitationsIndexResponses = {
+    200: {
+        data: Array<{
+            type: string;
+            id: string;
+            attributes: {
+                email: string;
+                role: string;
+                status: string;
+                expiresAt: string;
+                createdAt: string;
+            };
+            links: {
+                self: string;
+            };
+        }>;
+        links: {
+            first: string;
+            last: string;
+            prev: string | null;
+            next: string | null;
+        };
+        meta: {
+            page: {
+                currentPage: number;
+                from: number | null;
+                lastPage: number;
+                perPage: number;
+                to: number | null;
+                total: number;
+            };
+        };
+        jsonapi: {
+            version: string;
+        };
+    };
+};
+
+export type V1InvitationsIndexResponse = V1InvitationsIndexResponses[keyof V1InvitationsIndexResponses];
+
+export type V1InvitationsStoreData = {
+    body: {
+        /**
+         * The JSON:API resource object to create.
+         */
+        data: {
+            type: string;
+            attributes: {
+                email: string;
+                role: string;
+            };
+        };
+    };
+    path: {
+        account: string;
+    };
+    query?: never;
+    url: '/v1/accounts/{account}/invitations';
+};
+
+export type V1InvitationsStoreErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1InvitationsStoreError = V1InvitationsStoreErrors[keyof V1InvitationsStoreErrors];
+
+export type V1InvitationsStoreResponses = {
+    200: {
+        data: {
+            type: string;
+            id: string;
+            attributes: {
+                email: string;
+                role: string;
+                status: string;
+                expiresAt: string;
+                createdAt: string;
+            };
+            links: {
+                self: string;
+            };
+        };
+        jsonapi: {
+            version: string;
+        };
+    };
+};
+
+export type V1InvitationsStoreResponse = V1InvitationsStoreResponses[keyof V1InvitationsStoreResponses];
+
+export type V1InvitationsDestroyData = {
+    body?: never;
+    path: {
+        account: string;
+        invitation: string;
+    };
+    query?: never;
+    url: '/v1/accounts/{account}/invitations/{invitation}';
+};
+
+export type V1InvitationsDestroyErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1InvitationsDestroyError = V1InvitationsDestroyErrors[keyof V1InvitationsDestroyErrors];
+
+export type V1InvitationsDestroyResponses = {
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type V1InvitationsDestroyResponse = V1InvitationsDestroyResponses[keyof V1InvitationsDestroyResponses];
+
+export type InvitationsShowData = {
+    body?: never;
+    path: {
+        token: string;
+    };
+    query?: never;
+    url: '/invitations/{token}';
+};
+
+export type InvitationsShowErrors = {
+    404: {
+        message: 'This invitation is no longer valid.';
+    };
+};
+
+export type InvitationsShowError = InvitationsShowErrors[keyof InvitationsShowErrors];
+
+export type InvitationsShowResponses = {
+    200: {
+        data: {
+            accountName: string;
+            email: string;
+            role: string;
+            userExists: boolean;
+        };
+    };
+};
+
+export type InvitationsShowResponse = InvitationsShowResponses[keyof InvitationsShowResponses];
+
+export type AccountsLeaveData = {
+    body?: never;
+    path: {
+        account: string;
+    };
+    query?: never;
+    url: '/v1/accounts/{account}/me/membership';
+};
+
+export type AccountsLeaveErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type AccountsLeaveError = AccountsLeaveErrors[keyof AccountsLeaveErrors];
+
+export type AccountsLeaveResponses = {
+    /**
+     * No content
+     */
+    204: void;
+};
+
+export type AccountsLeaveResponse = AccountsLeaveResponses[keyof AccountsLeaveResponses];
+
+export type LoginData = {
+    body: LoginRequest;
+    path?: never;
+    query?: never;
+    url: '/login';
+};
+
+export type LoginErrors = {
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type LoginError = LoginErrors[keyof LoginErrors];
+
+export type LoginResponses = {
+    /**
+     * No content
+     */
+    204: void;
+};
+
+export type LoginResponse = LoginResponses[keyof LoginResponses];
+
+export type LogoutData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/logout';
+};
+
+export type LogoutErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type LogoutError = LogoutErrors[keyof LogoutErrors];
+
+export type LogoutResponses = {
+    /**
+     * No content
+     */
+    204: void;
+};
+
+export type LogoutResponse = LogoutResponses[keyof LogoutResponses];
+
+export type MeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/me';
+};
+
+export type MeErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type MeError = MeErrors[keyof MeErrors];
+
+export type MeResponses = {
+    200: {
+        data: {
+            user: {
+                id: number;
+                name: string;
+                email: string;
+            };
+            memberships: Array<{
+                account: {
+                    id: number;
+                    name: string;
+                    slug: string;
+                };
+                role: string;
+                permissions: Array<string>;
+            }>;
+        };
+    };
+};
+
+export type MeResponse = MeResponses[keyof MeResponses];
+
+export type V1MembershipsIndexData = {
+    body?: never;
+    path: {
+        account: string;
+    };
+    query?: never;
+    url: '/v1/accounts/{account}/memberships';
+};
+
+export type V1MembershipsIndexErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1MembershipsIndexError = V1MembershipsIndexErrors[keyof V1MembershipsIndexErrors];
+
+export type V1MembershipsIndexResponses = {
+    200: {
+        data: Array<{
+            type: string;
+            id: string;
+            attributes: {
+                userId: number;
+                userName: string;
+                userEmail: string;
+                role: string;
+                createdAt: string;
+            };
+            links: {
+                self: string;
+            };
+        }>;
+        links: {
+            first: string;
+            last: string;
+            prev: string | null;
+            next: string | null;
+        };
+        meta: {
+            page: {
+                currentPage: number;
+                from: number | null;
+                lastPage: number;
+                perPage: number;
+                to: number | null;
+                total: number;
+            };
+        };
+        jsonapi: {
+            version: string;
+        };
+    };
+};
+
+export type V1MembershipsIndexResponse = V1MembershipsIndexResponses[keyof V1MembershipsIndexResponses];
+
+export type V1MembershipsDestroyData = {
+    body?: never;
+    path: {
+        account: string;
+        membership: string;
+    };
+    query?: never;
+    url: '/v1/accounts/{account}/memberships/{membership}';
+};
+
+export type V1MembershipsDestroyErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1MembershipsDestroyError = V1MembershipsDestroyErrors[keyof V1MembershipsDestroyErrors];
+
+export type V1MembershipsDestroyResponses = {
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type V1MembershipsDestroyResponse = V1MembershipsDestroyResponses[keyof V1MembershipsDestroyResponses];
+
+export type V1MembershipsUpdateData = {
+    body: {
+        /**
+         * The JSON:API resource object to update.
+         */
+        data: {
+            type: string;
+            id: string;
+            attributes: {
+                role: string;
+            };
+        };
+    };
+    path: {
+        account: string;
+        membership: string;
+    };
+    query?: never;
+    url: '/v1/accounts/{account}/memberships/{membership}';
+};
+
+export type V1MembershipsUpdateErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1MembershipsUpdateError = V1MembershipsUpdateErrors[keyof V1MembershipsUpdateErrors];
+
+export type V1MembershipsUpdateResponses = {
+    200: {
+        data: {
+            type: string;
+            id: string;
+            attributes: {
+                userId: number;
+                userName: string;
+                userEmail: string;
+                role: string;
+                createdAt: string;
+            };
+            links: {
+                self: string;
+            };
+        };
+        jsonapi: {
+            version: string;
+        };
+    };
+};
+
+export type V1MembershipsUpdateResponse = V1MembershipsUpdateResponses[keyof V1MembershipsUpdateResponses];
 
 export type PostbacksAcceptData = {
     body?: never;
@@ -56,10 +818,26 @@ export type PostbacksAcceptResponse = PostbacksAcceptResponses[keyof PostbacksAc
 
 export type V1ProgramsIndexData = {
     body?: never;
-    path?: never;
+    path: {
+        account: string;
+    };
     query?: never;
-    url: '/v1/programs';
+    url: '/v1/accounts/{account}/programs';
 };
+
+export type V1ProgramsIndexErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1ProgramsIndexError = V1ProgramsIndexErrors[keyof V1ProgramsIndexErrors];
 
 export type V1ProgramsIndexResponses = {
     200: {
@@ -123,10 +901,26 @@ export type V1ProgramsStoreData = {
             };
         };
     };
-    path?: never;
+    path: {
+        account: string;
+    };
     query?: never;
-    url: '/v1/programs';
+    url: '/v1/accounts/{account}/programs';
 };
+
+export type V1ProgramsStoreErrors = {
+    /**
+     * Unauthenticated
+     */
+    401: {
+        /**
+         * Error overview.
+         */
+        message: string;
+    };
+};
+
+export type V1ProgramsStoreError = V1ProgramsStoreErrors[keyof V1ProgramsStoreErrors];
 
 export type V1ProgramsStoreResponses = {
     200: {
@@ -155,3 +949,39 @@ export type V1ProgramsStoreResponses = {
 };
 
 export type V1ProgramsStoreResponse = V1ProgramsStoreResponses[keyof V1ProgramsStoreResponses];
+
+export type PasswordUpdateData = {
+    body: ResetPasswordRequest;
+    path?: never;
+    query?: never;
+    url: '/reset-password';
+};
+
+export type PasswordUpdateErrors = {
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
+    };
+};
+
+export type PasswordUpdateError = PasswordUpdateErrors[keyof PasswordUpdateErrors];
+
+export type PasswordUpdateResponses = {
+    /**
+     * No content
+     */
+    204: void;
+};
+
+export type PasswordUpdateResponse = PasswordUpdateResponses[keyof PasswordUpdateResponses];

@@ -8,12 +8,14 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 
-// Casts to/from two columns ({attribute}_minor_units, {attribute}_currency) so both stay queryable/indexable.
 /**
  * @implements CastsAttributes<Money, Money>
  */
 final class MoneyCast implements CastsAttributes
 {
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     public function get(Model $model, string $key, mixed $value, array $attributes): ?Money
     {
         $minorUnits = $attributes["{$key}_minor_units"] ?? null;
@@ -27,7 +29,8 @@ final class MoneyCast implements CastsAttributes
     }
 
     /**
-     * @return array<string, int|string|null>
+     * @param  array<string, mixed>  $attributes
+     * @return array<string, mixed>
      */
     public function set(Model $model, string $key, mixed $value, array $attributes): array
     {
@@ -35,7 +38,6 @@ final class MoneyCast implements CastsAttributes
             return ["{$key}_minor_units" => null, "{$key}_currency" => null];
         }
 
-        // @phpstan-ignore instanceof.alwaysTrue (runtime guard for callers that bypass static analysis)
         if (! $value instanceof Money) {
             throw new InvalidArgumentException(sprintf(
                 'Expected %s to be an instance of %s, got %s.',

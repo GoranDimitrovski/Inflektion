@@ -26,13 +26,12 @@ final class PersonalizationStrategyRegistry
         }
 
         try {
-            /** @var PersonalizationStrategy $strategy */
+
             $strategy = app($this->strategies[$identifier]);
 
             return $strategy->decide($link, $context);
         } catch (Throwable $e) {
-            // Personalization must never break the redirect — a broken rule
-            // silently degrades to the null variant instead of surfacing.
+
             Log::warning('Personalization strategy failed, falling back to null variant', [
                 'strategy' => $identifier,
                 'exception' => $e::class,

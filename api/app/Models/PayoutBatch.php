@@ -4,26 +4,30 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 use LogicException;
 
 /**
- * Explicit state machine: open -> closed. State transitions are methods on
- * the model, not `if`s at call sites (see project "where logic goes" rule).
- *
  * @property int $id
+ * @property int $account_id
  * @property string $status
- * @property \DateTimeInterface $opened_at
- * @property \DateTimeInterface|null $closed_at
+ * @property Carbon $opened_at
+ * @property Carbon|null $closed_at
  */
 final class PayoutBatch extends Model
 {
+    use BelongsToTenant;
+
     public const STATUS_OPEN = 'open';
 
     public const STATUS_CLOSED = 'closed';
 
     protected $fillable = [
+        'account_id',
         'status',
         'opened_at',
         'closed_at',
@@ -37,9 +41,6 @@ final class PayoutBatch extends Model
         ];
     }
 
-    /**
-     * @throws LogicException
-     */
     public function close(\DateTimeInterface $closedAt): void
     {
         if ($this->status !== self::STATUS_OPEN) {
@@ -55,6 +56,14 @@ final class PayoutBatch extends Model
     public function isOpen(): bool
     {
         return $this->status === self::STATUS_OPEN;
+    }
+
+    /**
+     * @return BelongsTo<Account, $this>
+     */
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
     }
 
     /**
