@@ -1,0 +1,9 @@
+@if (loading()) {
+  <p class="state">Loading…</p>
+} @else if (error()) {
+  <p class="state error">{{ error() }}</p>
+} @else if (empty()) {
+  <p class="state">{{ emptyMessage() }}</p>
+} @else {
+  <ng-content />
+}

@@ -1,0 +1,132 @@
+<section>
+  <h1>Members</h1>
+
+  @if (!canManage()) {
+    <p>You're a member of this account.</p>
+
+    @if (leaveError()) {
+      <p class="error">{{ leaveError() }}</p>
+    }
+
+    <button type="button" [disabled]="leaving()" (click)="onLeave()">Leave this account</button>
+  } @else {
+    <nav class="tabs">
+      <button type="button" [class.active]="tab() === 'members'" (click)="tab.set('members')">Members</button>
+      <button type="button" [class.active]="tab() === 'invitations'" (click)="tab.set('invitations')">
+        Pending invitations
+      </button>
+    </nav>
+
+    @if (tab() === 'members') {
+      <app-data-table
+        [loading]="facade.loading()"
+        [error]="facade.error()"
+        [empty]="facade.memberships().length === 0"
+        emptyMessage="No members yet."
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Name</th>
+              <th>Role</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (membership of facade.memberships(); track membership.id) {
+              <tr>
+                <td>{{ membership.attributes.userEmail }}</td>
+                <td>{{ membership.attributes.userName }}</td>
+                <td>
+                  <select
+                    [value]="membership.attributes.role"
+                    [disabled]="isSelf(membership)"
+                    (change)="onChangeRole(membership, $any($event.target).value)"
+                  >
+                    @for (role of roles; track role) {
+                      <option [value]="role">{{ role }}</option>
+                    }
+                  </select>
+                </td>
+                <td>
+                  @if (confirmingRemovalOf() === membership.id) {
+                    <input
+                      #confirmInput
+                      type="email"
+                      placeholder="Type their email to confirm"
+                      (keyup.enter)="confirmRemoval(membership, confirmInput.value)"
+                    />
+                    <button type="button" (click)="confirmRemoval(membership, confirmInput.value)">Confirm</button>
+                    <button type="button" (click)="confirmingRemovalOf.set(null)">Cancel</button>
+                  } @else {
+                    <button type="button" (click)="confirmingRemovalOf.set(membership.id)">
+                      {{ isSelf(membership) ? 'Leave' : 'Remove' }}
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </app-data-table>
+
+      <form (submit)="$event.preventDefault(); onInvite()">
+        <h2>Invite someone</h2>
+
+        @if (inviteError()) {
+          <p class="error">{{ inviteError() }}</p>
+        }
+
+        <label>
+          Email
+          <input type="email" [formField]="inviteForm.email" />
+        </label>
+        @if (inviteForm.email().errors().length > 0) {
+          <p class="field-error">{{ inviteForm.email().errors()[0].message }}</p>
+        }
+
+        <label>
+          Role
+          <select [formField]="inviteForm.role">
+            @for (role of roles; track role) {
+              <option [value]="role">{{ role }}</option>
+            }
+          </select>
+        </label>
+
+        <button type="submit" [disabled]="inviting()">Send invitation</button>
+      </form>
+    } @else {
+      <app-data-table
+        [loading]="facade.loading()"
+        [error]="facade.error()"
+        [empty]="facade.invitations().length === 0"
+        emptyMessage="No pending invitations."
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Expires</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (invitation of facade.invitations(); track invitation.id) {
+              <tr>
+                <td>{{ invitation.attributes.email }}</td>
+                <td>{{ invitation.attributes.role }}</td>
+                <td>{{ invitation.attributes.expiresAt | date: 'medium' }}</td>
+                <td>
+                  <button type="button" (click)="onRevokeInvitation(invitation)">Revoke</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </app-data-table>
+    }
+  }
+</section>

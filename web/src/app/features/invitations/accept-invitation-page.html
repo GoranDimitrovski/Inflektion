@@ -1,0 +1,49 @@
+<section>
+  @if (notFound()) {
+    <h1>Invitation not found</h1>
+    <p>This invitation link is invalid or has expired.</p>
+  } @else if (invitation(); as invite) {
+    <h1>Join {{ invite.accountName }}</h1>
+    <p>You've been invited as <strong>{{ invite.role }}</strong>.</p>
+
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+
+    @if (session.isAuthenticated()) {
+      <button type="button" [disabled]="submitting()" (click)="onAcceptAsSelf()">Accept invitation</button>
+    } @else if (invite.userExists) {
+      <p>
+        An account already exists for {{ invite.email }}.
+        <a routerLink="/login">Log in</a>, then open this invitation link again.
+      </p>
+    } @else {
+      <form (submit)="$event.preventDefault(); onRegisterAndAccept()">
+        <label>
+          Name
+          <input type="text" [formField]="registerForm.name" />
+        </label>
+        @if (registerForm.name().errors().length > 0) {
+          <p class="field-error">{{ registerForm.name().errors()[0].message }}</p>
+        }
+
+        <label>
+          Password
+          <input type="password" [formField]="registerForm.password" />
+        </label>
+        @if (registerForm.password().errors().length > 0) {
+          <p class="field-error">{{ registerForm.password().errors()[0].message }}</p>
+        }
+
+        <label>
+          Confirm password
+          <input type="password" [formField]="registerForm.password_confirmation" />
+        </label>
+
+        <button type="submit" [disabled]="submitting()">Create account and join</button>
+      </form>
+    }
+  } @else {
+    <p>Loading…</p>
+  }
+</section>

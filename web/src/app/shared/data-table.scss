@@ -1,0 +1,9 @@
+.state {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  color: #666;
+
+  &.error {
+    color: #b00020;
+  }
+}
