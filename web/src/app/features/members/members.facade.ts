@@ -13,7 +13,6 @@ import { firstApiError } from '../../shared/api-error';
 export type MembershipResource = V1MembershipsIndexResponses[200]['data'][number];
 export type InvitationResource = V1InvitationsIndexResponses[200]['data'][number];
 
-const JSON_API_HEADERS = { 'Content-Type': 'application/vnd.api+json' };
 
 @Injectable()
 export class MembersFacade {
@@ -45,7 +44,6 @@ export class MembersFacade {
     const { data, error } = await v1InvitationsStore({
       path: { account: String(accountId) },
       body: { data: { type: 'invitations', attributes: { email, role } } },
-      headers: JSON_API_HEADERS,
     });
 
     if (error) {
@@ -77,7 +75,6 @@ export class MembersFacade {
     const { data, error } = await v1MembershipsUpdate({
       path: { account: String(accountId), membership: membershipId },
       body: { data: { type: 'memberships', id: membershipId, attributes: { role } } },
-      headers: JSON_API_HEADERS,
     });
 
     if (error) {

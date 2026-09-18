@@ -22,12 +22,16 @@ final class CommissionStrategyRegistry
     }
 
     /**
-     * @throws UnknownCommissionStrategyException
+     * @throws CommissionException
      */
     public function resolve(?string $identifier): CommissionStrategy
     {
         if ($identifier === null || ! isset($this->strategies[$identifier])) {
-            throw new UnknownCommissionStrategyException($identifier);
+            throw new CommissionException(
+                $identifier === null
+                    ? 'Program has no commission_strategy configured.'
+                    : "Unknown commission strategy [{$identifier}]."
+            );
         }
 
         /** @var CommissionStrategy */

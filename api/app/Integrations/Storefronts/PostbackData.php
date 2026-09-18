@@ -12,6 +12,5 @@ final class PostbackData
         public readonly string $externalId,
         public readonly ?string $clickId,
         public readonly Money $amount,
-        public readonly string $eventType,
     ) {}
 }

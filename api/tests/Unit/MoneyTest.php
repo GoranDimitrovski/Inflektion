@@ -14,9 +14,9 @@ final class MoneyTest extends TestCase
     #[Test]
     public function itConsidersEqualAmountAndCurrencyEqual(): void
     {
-        $this->assertTrue(Money::of(100, 'USD')->equals(Money::of(100, 'USD')));
-        $this->assertFalse(Money::of(100, 'USD')->equals(Money::of(100, 'EUR')));
-        $this->assertFalse(Money::of(100, 'USD')->equals(Money::of(101, 'USD')));
+        $this->assertEquals(Money::of(100, 'USD'), Money::of(100, 'USD'));
+        $this->assertNotEquals(Money::of(100, 'EUR'), Money::of(100, 'USD'));
+        $this->assertNotEquals(Money::of(101, 'USD'), Money::of(100, 'USD'));
     }
 
     #[Test]

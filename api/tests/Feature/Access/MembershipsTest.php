@@ -15,17 +15,13 @@ final class MembershipsTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const JSON_API_MEDIA_TYPE = 'application/vnd.api+json';
-
     #[Test]
     public function anOwnerCanListMembers(): void
     {
         $account = $this->actingAsAccountMember(role: Role::Owner);
         Membership::factory()->for($account)->create(['role' => Role::Member]);
 
-        $response = $this->getJson("/api/v1/accounts/{$account->id}/memberships", [
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
+        $response = $this->getJsonApi("/api/v1/accounts/{$account->id}/memberships");
 
         $response->assertOk();
         $response->assertJsonCount(2, 'data');
@@ -36,9 +32,7 @@ final class MembershipsTest extends TestCase
     {
         $account = $this->actingAsAccountMember(role: Role::Member);
 
-        $response = $this->getJson("/api/v1/accounts/{$account->id}/memberships", [
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
+        $response = $this->getJsonApi("/api/v1/accounts/{$account->id}/memberships");
 
         $response->assertForbidden();
     }
@@ -55,7 +49,7 @@ final class MembershipsTest extends TestCase
                 'id' => (string) $target->id,
                 'attributes' => ['role' => 'admin'],
             ],
-        ], ['CONTENT_TYPE' => self::JSON_API_MEDIA_TYPE, 'Accept' => self::JSON_API_MEDIA_TYPE]);
+        ], $this->jsonApiHeaders());
 
         $response->assertOk();
         $response->assertJsonPath('data.attributes.role', 'admin');
@@ -80,7 +74,7 @@ final class MembershipsTest extends TestCase
                 'id' => (string) $target->id,
                 'attributes' => ['role' => 'owner'],
             ],
-        ], ['CONTENT_TYPE' => self::JSON_API_MEDIA_TYPE, 'Accept' => self::JSON_API_MEDIA_TYPE]);
+        ], $this->jsonApiHeaders());
 
         $response->assertUnprocessable();
     }

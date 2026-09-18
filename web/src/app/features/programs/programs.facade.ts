@@ -39,9 +39,6 @@ export class ProgramsFacade {
     const { data, error } = await v1ProgramsStore({
       path: { account: String(accountId) },
       body: { data: { type: 'programs', attributes } },
-      // The generated SDK hardcodes "Content-Type: application/json" on
-      // every store call; JSON:API requires the vendor media type instead.
-      headers: { 'Content-Type': 'application/vnd.api+json' },
     });
 
     if (error) {

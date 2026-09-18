@@ -48,7 +48,7 @@ export class MembersPage implements OnInit {
     // Listing requires members.manage; a plain Member/Viewer can still reach
     // this page to leave the account, so the load is skipped for them.
     if (this.canManage()) {
-      void this.facade.load(this.accountId());
+      void this.facade.load(this.session.requireAccountId());
     }
   }
 
@@ -60,7 +60,7 @@ export class MembersPage implements OnInit {
     this.leaving.set(true);
     this.leaveError.set(null);
 
-    const { error } = await accountsLeave({ path: { account: String(this.accountId()) } });
+    const { error } = await accountsLeave({ path: { account: String(this.session.requireAccountId()) } });
 
     if (error) {
       this.leaveError.set(
@@ -86,7 +86,7 @@ export class MembersPage implements OnInit {
 
     await submit(this.inviteForm, async () => {
       const error = await this.facade.invite(
-        this.accountId(),
+        this.session.requireAccountId(),
         this.inviteModel().email,
         this.inviteModel().role,
       );
@@ -103,31 +103,20 @@ export class MembersPage implements OnInit {
   }
 
   protected async onChangeRole(membership: MembershipResource, role: string): Promise<void> {
-    await this.facade.changeRole(this.accountId(), membership.id, role);
+    await this.facade.changeRole(this.session.requireAccountId(), membership.id, role);
   }
 
   protected async onRevokeInvitation(invitation: InvitationResource): Promise<void> {
-    await this.facade.revokeInvitation(this.accountId(), invitation.id);
+    await this.facade.revokeInvitation(this.session.requireAccountId(), invitation.id);
   }
 
   /** Dangerous action: requires typing the member's email before it fires — see the project's "typed confirmation" rule. */
   protected confirmRemoval(membership: MembershipResource, typedEmail: string): void {
     if (typedEmail.trim().toLowerCase() === membership.attributes.userEmail.toLowerCase()) {
       void this.facade
-        .revokeMembership(this.accountId(), membership.id)
+        .revokeMembership(this.session.requireAccountId(), membership.id)
         .then(() => this.confirmingRemovalOf.set(null));
     }
   }
 
-  private accountId(): number {
-    const accountId = this.session.activeMembership()?.account.id;
-
-    if (accountId === undefined) {
-      throw new Error(
-        'MembersPage rendered without an active account — the route guard should prevent this.',
-      );
-    }
-
-    return accountId;
-  }
 }

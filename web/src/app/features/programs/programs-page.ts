@@ -35,14 +35,14 @@ export class ProgramsPage implements OnInit {
   ngOnInit(): void {
     // The `accounts/:accountId` route guard has already resolved the
     // active membership before this component can render.
-    void this.facade.load(this.accountId());
+    void this.facade.load(this.session.requireAccountId());
   }
 
   protected async onSubmit(): Promise<void> {
     this.submitting.set(true);
 
     await submit(this.createForm, async () => {
-      const created = await this.facade.create(this.accountId(), this.model());
+      const created = await this.facade.create(this.session.requireAccountId(), this.model());
 
       if (created) {
         this.model.set({ name: '', slug: '' });
@@ -53,15 +53,4 @@ export class ProgramsPage implements OnInit {
     this.submitting.set(false);
   }
 
-  private accountId(): number {
-    const accountId = this.session.activeMembership()?.account.id;
-
-    if (accountId === undefined) {
-      throw new Error(
-        'ProgramsPage rendered without an active account — the route guard should prevent this.',
-      );
-    }
-
-    return accountId;
-  }
 }

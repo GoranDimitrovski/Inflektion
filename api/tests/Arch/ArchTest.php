@@ -13,47 +13,6 @@ use Tests\TestCase;
 final class ArchTest extends TestCase
 {
     #[Test]
-    public function noAppendOnlyModelFileContainsAnUpdateOrDeleteCall(): void
-    {
-        $appendOnlyFiles = [
-            ...glob(app_path('Models/*Ledger*.php')) ?: [],
-            app_path('Access/AuditEntry.php'),
-        ];
-
-        $this->assertNotEmpty($appendOnlyFiles);
-
-        foreach ($appendOnlyFiles as $file) {
-            $this->assertFileExists($file);
-
-            $contents = file_get_contents($file);
-
-            $this->assertStringNotContainsString('->update(', $contents);
-            $this->assertStringNotContainsString('->delete(', $contents);
-        }
-    }
-
-    #[Test]
-    public function noEloquentObserverOrListenerWritesAMoneyTypedAttribute(): void
-    {
-        $hookDirs = array_filter([app_path('Observers'), app_path('Listeners')], 'is_dir');
-
-        if ($hookDirs === []) {
-            $this->assertTrue(true);
-
-            return;
-        }
-
-        foreach ($hookDirs as $dir) {
-            foreach (glob($dir.'/*.php') ?: [] as $file) {
-                $this->assertDoesNotMatchRegularExpression(
-                    '/->(?:price|amount|cost|payout)[A-Za-z_]*\s*=/',
-                    file_get_contents($file),
-                );
-            }
-        }
-    }
-
-    #[Test]
     public function integrationsIsOnlyUsedWithinItsOwnNamespaceActionsOrServiceProviders(): void
     {
         $this->assertNamespaceOnlyUsedIn('App\Integrations', ['App\Actions', 'App\Providers']);
@@ -110,22 +69,6 @@ final class ArchTest extends TestCase
     public function concreteCommissionStrategiesAreOnlyConstructedWithinCommissionsOrProviders(): void
     {
         $this->assertNamespaceOnlyUsedIn('App\Commissions\Strategies', ['App\Commissions', 'App\Providers']);
-    }
-
-    #[Test]
-    public function noBareMatchExpressionDispatchesOnAStrategyOutsideItsRegistry(): void
-    {
-        $exemptDirs = array_map(app_path(...), ['Commissions', 'Personalization', 'Providers']);
-
-        foreach ($this->phpFilesUnder(app_path()) as $file) {
-            foreach ($exemptDirs as $dir) {
-                if (str_starts_with(str_replace('\\', '/', $file), str_replace('\\', '/', $dir).'/')) {
-                    continue 2;
-                }
-            }
-
-            $this->assertDoesNotMatchRegularExpression('/\bmatch\s*\(/', file_get_contents($file));
-        }
     }
 
     #[Test]

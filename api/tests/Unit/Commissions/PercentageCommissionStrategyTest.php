@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Commissions;
 
-use App\Commissions\MisconfiguredCommissionException;
+use App\Commissions\CommissionException;
 use App\Commissions\Strategies\PercentageCommissionStrategy;
 use App\Models\Conversion;
 use App\Models\Program;
@@ -34,7 +34,7 @@ final class PercentageCommissionStrategyTest extends TestCase
         $strategy = new PercentageCommissionStrategy;
         $result = $strategy->calculate($conversion, $program);
 
-        $this->assertTrue($result->equals(Money::of($expectedMinorUnits, 'USD')));
+        $this->assertEquals(Money::of($expectedMinorUnits, 'USD'), $result);
     }
 
     #[Test]
@@ -51,7 +51,7 @@ final class PercentageCommissionStrategyTest extends TestCase
 
         $strategy = new PercentageCommissionStrategy;
 
-        $this->expectException(MisconfiguredCommissionException::class);
+        $this->expectException(CommissionException::class);
 
         $strategy->calculate($conversion, $program);
     }

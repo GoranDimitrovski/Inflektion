@@ -7,7 +7,6 @@ namespace Tests\Feature;
 use App\Models\Account;
 use App\Models\Program;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -15,14 +14,12 @@ final class ProgramsTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const JSON_API_MEDIA_TYPE = 'application/vnd.api+json';
-
     #[Test]
     public function itCreatesAProgram(): void
     {
         $account = $this->actingAsAccountMember();
 
-        $response = $this->postJsonApi($account, [
+        $response = $this->postJsonApi($account, 'programs', [
             'name' => 'Acme Affiliates',
             'slug' => 'acme-affiliates',
         ]);
@@ -50,7 +47,7 @@ final class ProgramsTest extends TestCase
     {
         $account = $this->actingAsAccountMember();
 
-        $response = $this->postJsonApi($account, [
+        $response = $this->postJsonApi($account, 'programs', [
             'name' => 'Acme Affiliates',
             'slug' => 'acme-percentage',
             'commissionStrategy' => 'percentage',
@@ -73,7 +70,7 @@ final class ProgramsTest extends TestCase
     {
         $account = $this->actingAsAccountMember();
 
-        $response = $this->postJsonApi($account, [
+        $response = $this->postJsonApi($account, 'programs', [
             'name' => 'Acme Affiliates',
             'slug' => 'acme-missing-rate',
             'commissionStrategy' => 'percentage',
@@ -90,7 +87,7 @@ final class ProgramsTest extends TestCase
 
         Program::factory()->for($account)->create(['name' => 'Acme', 'slug' => 'acme']);
 
-        $response = $this->postJsonApi($account, [
+        $response = $this->postJsonApi($account, 'programs', [
             'name' => 'Acme Again',
             'slug' => 'acme',
         ]);
@@ -109,9 +106,7 @@ final class ProgramsTest extends TestCase
 
         Program::factory()->for($account)->count(3)->create();
 
-        $response = $this->getJson("/api/v1/accounts/{$account->id}/programs", [
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
+        $response = $this->getJsonApi("/api/v1/accounts/{$account->id}/programs");
 
         $response->assertOk();
         $response->assertHeader('Content-Type', self::JSON_API_MEDIA_TYPE);
@@ -134,9 +129,7 @@ final class ProgramsTest extends TestCase
         $account = $this->actingAsAccountMember();
         Program::factory()->for($account)->create();
 
-        $response = $this->getJson("/api/v1/accounts/{$account->id}/programs", [
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
+        $response = $this->getJsonApi("/api/v1/accounts/{$account->id}/programs");
 
         $response->assertOk();
         $response->assertJsonCount(1, 'data');
@@ -148,9 +141,7 @@ final class ProgramsTest extends TestCase
         $this->actingAsAccountMember();
         $otherAccount = Account::factory()->create();
 
-        $response = $this->getJson("/api/v1/accounts/{$otherAccount->id}/programs", [
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
+        $response = $this->getJsonApi("/api/v1/accounts/{$otherAccount->id}/programs");
 
         $response->assertNotFound();
     }
@@ -160,26 +151,8 @@ final class ProgramsTest extends TestCase
     {
         $account = Account::factory()->create();
 
-        $response = $this->getJson("/api/v1/accounts/{$account->id}/programs", [
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
+        $response = $this->getJsonApi("/api/v1/accounts/{$account->id}/programs");
 
         $response->assertUnauthorized();
-    }
-
-    /**
-     * @param  array<string, mixed>  $attributes
-     */
-    private function postJsonApi(Account $account, array $attributes): TestResponse
-    {
-        return $this->postJson("/api/v1/accounts/{$account->id}/programs", [
-            'data' => [
-                'type' => 'programs',
-                'attributes' => $attributes,
-            ],
-        ], [
-            'CONTENT_TYPE' => self::JSON_API_MEDIA_TYPE,
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
     }
 }

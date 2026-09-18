@@ -49,7 +49,7 @@ final class AcceptInvitationTest extends TestCase
             'name' => 'Ada Lovelace',
             'password' => 'a-strong-password',
             'password_confirmation' => 'a-strong-password',
-        ], ['Origin' => 'http://localhost:4200']);
+        ], $this->spaHeaders());
 
         $response->assertOk();
         $response->assertJsonPath('data.account.id', $account->id);
@@ -72,7 +72,7 @@ final class AcceptInvitationTest extends TestCase
         $account = Account::factory()->create();
         [$invitation, $token] = $this->createInvitation($account, 'invitee@example.com');
 
-        $response = $this->postJson("/api/invitations/{$token}/accept", [], ['Origin' => 'http://localhost:4200']);
+        $response = $this->postJson("/api/invitations/{$token}/accept", [], $this->spaHeaders());
 
         $response->assertUnprocessable();
     }
@@ -84,7 +84,7 @@ final class AcceptInvitationTest extends TestCase
         [$invitation, $token] = $this->createInvitation($account, 'existing@example.com');
         User::factory()->create(['email' => 'existing@example.com']);
 
-        $response = $this->postJson("/api/invitations/{$token}/accept", [], ['Origin' => 'http://localhost:4200']);
+        $response = $this->postJson("/api/invitations/{$token}/accept", [], $this->spaHeaders());
 
         $response->assertUnauthorized();
     }
@@ -96,7 +96,7 @@ final class AcceptInvitationTest extends TestCase
         [$invitation, $token] = $this->createInvitation($account, 'existing@example.com');
         $user = User::factory()->create(['email' => 'existing@example.com']);
 
-        $response = $this->actingAs($user)->postJson("/api/invitations/{$token}/accept", [], ['Origin' => 'http://localhost:4200']);
+        $response = $this->actingAs($user)->postJson("/api/invitations/{$token}/accept", [], $this->spaHeaders());
 
         $response->assertOk();
         $this->assertDatabaseHas('memberships', ['account_id' => $account->id, 'user_id' => $user->id]);
@@ -109,7 +109,7 @@ final class AcceptInvitationTest extends TestCase
         [$invitation, $token] = $this->createInvitation($account, 'invitee@example.com');
         $wrongUser = User::factory()->create(['email' => 'someone-else@example.com']);
 
-        $response = $this->actingAs($wrongUser)->postJson("/api/invitations/{$token}/accept", [], ['Origin' => 'http://localhost:4200']);
+        $response = $this->actingAs($wrongUser)->postJson("/api/invitations/{$token}/accept", [], $this->spaHeaders());
 
         $response->assertUnprocessable();
     }
@@ -125,7 +125,7 @@ final class AcceptInvitationTest extends TestCase
             'name' => 'Ada Lovelace',
             'password' => 'a-strong-password',
             'password_confirmation' => 'a-strong-password',
-        ], ['Origin' => 'http://localhost:4200']);
+        ], $this->spaHeaders());
 
         $response->assertUnprocessable();
     }

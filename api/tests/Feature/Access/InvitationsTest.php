@@ -5,21 +5,17 @@ declare(strict_types=1);
 namespace Tests\Feature\Access;
 
 use App\Access\Role;
-use App\Models\Account;
 use App\Models\Invitation;
 use App\Notifications\InvitationReceived;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 final class InvitationsTest extends TestCase
 {
     use RefreshDatabase;
-
-    private const JSON_API_MEDIA_TYPE = 'application/vnd.api+json';
 
     #[Test]
     public function anOwnerCanInviteSomeone(): void
@@ -28,7 +24,7 @@ final class InvitationsTest extends TestCase
 
         $account = $this->actingAsAccountMember(role: Role::Owner);
 
-        $response = $this->postJsonApi($account, ['email' => 'invitee@example.com', 'role' => 'member']);
+        $response = $this->postJsonApi($account, 'invitations', ['email' => 'invitee@example.com', 'role' => 'member']);
 
         $response->assertCreated();
         $response->assertJsonPath('data.attributes.email', 'invitee@example.com');
@@ -48,7 +44,7 @@ final class InvitationsTest extends TestCase
     {
         $account = $this->actingAsAccountMember(role: Role::Member);
 
-        $response = $this->postJsonApi($account, ['email' => 'invitee@example.com', 'role' => 'member']);
+        $response = $this->postJsonApi($account, 'invitations', ['email' => 'invitee@example.com', 'role' => 'member']);
 
         $response->assertForbidden();
     }
@@ -58,7 +54,7 @@ final class InvitationsTest extends TestCase
     {
         $account = $this->actingAsAccountMember(role: Role::Admin);
 
-        $response = $this->postJsonApi($account, ['email' => 'invitee@example.com', 'role' => 'owner']);
+        $response = $this->postJsonApi($account, 'invitations', ['email' => 'invitee@example.com', 'role' => 'owner']);
 
         $response->assertUnprocessable();
     }
@@ -69,9 +65,7 @@ final class InvitationsTest extends TestCase
         $account = $this->actingAsAccountMember(role: Role::Owner);
         Invitation::factory()->for($account)->count(2)->create();
 
-        $response = $this->getJson("/api/v1/accounts/{$account->id}/invitations", [
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
+        $response = $this->getJsonApi("/api/v1/accounts/{$account->id}/invitations");
 
         $response->assertOk();
         $response->assertJsonCount(2, 'data');
@@ -108,21 +102,5 @@ final class InvitationsTest extends TestCase
         ]);
 
         $response->assertUnprocessable();
-    }
-
-    /**
-     * @param  array<string, mixed>  $attributes
-     */
-    private function postJsonApi(Account $account, array $attributes): TestResponse
-    {
-        return $this->postJson("/api/v1/accounts/{$account->id}/invitations", [
-            'data' => [
-                'type' => 'invitations',
-                'attributes' => $attributes,
-            ],
-        ], [
-            'CONTENT_TYPE' => self::JSON_API_MEDIA_TYPE,
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
     }
 }

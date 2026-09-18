@@ -7,7 +7,6 @@ namespace App\Actions\Commerce;
 use App\Commissions\CommissionStrategyRegistry;
 use App\Models\CommissionLedgerEntry;
 use App\Models\Conversion;
-use App\Support\Clock;
 use App\Support\Outbox\OutboxMessage;
 use Illuminate\Support\Facades\DB;
 use LogicException;
@@ -16,7 +15,6 @@ final class WriteCommission
 {
     public function __construct(
         private readonly CommissionStrategyRegistry $registry,
-        private readonly Clock $clock,
     ) {}
 
     public function handle(Conversion $conversion): CommissionLedgerEntry
@@ -26,7 +24,7 @@ final class WriteCommission
         }
 
         return DB::transaction(function () use ($conversion): CommissionLedgerEntry {
-            $now = $this->clock->now();
+            $now = now();
 
             $program = $conversion->attributedProgram()->firstOrFail();
 

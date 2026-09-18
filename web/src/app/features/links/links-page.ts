@@ -35,7 +35,7 @@ export class LinksPage implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    await this.facade.loadPrograms(this.accountId());
+    await this.facade.loadPrograms(this.session.requireAccountId());
 
     const firstProgramId = this.facade.programs()[0]?.id;
 
@@ -47,7 +47,7 @@ export class LinksPage implements OnInit {
   protected async onSelectProgram(programId: number | string): Promise<void> {
     const id = Number(programId);
     this.selectedProgramId.set(id);
-    await this.facade.loadLinks(this.accountId(), id);
+    await this.facade.loadLinks(this.session.requireAccountId(), id);
   }
 
   protected async onSubmit(): Promise<void> {
@@ -63,7 +63,7 @@ export class LinksPage implements OnInit {
     await submit(this.createForm, async () => {
       const { destinationUrl, personalizationStrategy } = this.model();
 
-      const error = await this.facade.create(this.accountId(), {
+      const error = await this.facade.create(this.session.requireAccountId(), {
         programId,
         destinationUrl,
         ...(personalizationStrategy ? { personalizationStrategy } : {}),
@@ -83,7 +83,7 @@ export class LinksPage implements OnInit {
   protected async onToggleStatus(link: LinkResource): Promise<void> {
     const nextStatus = link.attributes.status === 'active' ? 'paused' : 'active';
 
-    await this.facade.updateStatus(this.accountId(), link.id, nextStatus);
+    await this.facade.updateStatus(this.session.requireAccountId(), link.id, nextStatus);
   }
 
   protected async copyRedirectUrl(url: string): Promise<void> {
@@ -94,13 +94,4 @@ export class LinksPage implements OnInit {
     }
   }
 
-  private accountId(): number {
-    const accountId = this.session.activeMembership()?.account.id;
-
-    if (accountId === undefined) {
-      throw new Error('LinksPage rendered without an active account — the route guard should prevent this.');
-    }
-
-    return accountId;
-  }
 }

@@ -10,7 +10,6 @@ use App\Models\Account;
 use App\Models\Membership;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Testing\TestResponse;
 use Laravel\Sanctum\NewAccessToken;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -19,14 +18,12 @@ final class ApiTokensTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const JSON_API_MEDIA_TYPE = 'application/vnd.api+json';
-
     #[Test]
     public function aMemberCanIssueATokenForTheirOwnAccountAndSeesThePlaintextOnlyOnce(): void
     {
         $account = $this->actingAsAccountMember(role: Role::Admin);
 
-        $response = $this->postJsonApi($account, ['name' => 'CI script', 'abilities' => ['programs.read']]);
+        $response = $this->postJsonApi($account, 'api-tokens', ['name' => 'CI script', 'abilities' => ['programs.read']]);
 
         $response->assertCreated();
         $response->assertJsonPath('data.attributes.name', 'CI script');
@@ -39,7 +36,7 @@ final class ApiTokensTest extends TestCase
     {
         $account = $this->actingAsAccountMember(role: Role::Viewer);
 
-        $response = $this->postJsonApi($account, ['name' => 'Escalation', 'abilities' => ['programs.write']]);
+        $response = $this->postJsonApi($account, 'api-tokens', ['name' => 'Escalation', 'abilities' => ['programs.write']]);
 
         $response->assertUnprocessable();
     }
@@ -56,7 +53,7 @@ final class ApiTokensTest extends TestCase
 
         $this->issueToken($account, $me, Role::Owner, ['programs.read']);
 
-        $response = $this->getJson("/api/v1/accounts/{$account->id}/api-tokens", ['Accept' => self::JSON_API_MEDIA_TYPE]);
+        $response = $this->getJsonApi("/api/v1/accounts/{$account->id}/api-tokens");
 
         $response->assertOk();
         $response->assertJsonCount(1, 'data');
@@ -133,7 +130,7 @@ final class ApiTokensTest extends TestCase
         $writeResponse = $this->withToken($token->plainTextToken)->postJson(
             "/api/v1/accounts/{$account->id}/programs",
             ['data' => ['type' => 'programs', 'attributes' => ['name' => 'Acme', 'slug' => 'acme']]],
-            ['CONTENT_TYPE' => self::JSON_API_MEDIA_TYPE, 'Accept' => self::JSON_API_MEDIA_TYPE],
+            $this->jsonApiHeaders(),
         );
 
         $writeResponse->assertForbidden();
@@ -142,21 +139,5 @@ final class ApiTokensTest extends TestCase
     private function issueToken(Account $account, User $user, Role $role, array $abilities): NewAccessToken
     {
         return app(IssueApiToken::class)->handle($account, $user, $role, 'Test token', $abilities, null);
-    }
-
-    /**
-     * @param  array<string, mixed>  $attributes
-     */
-    private function postJsonApi(Account $account, array $attributes): TestResponse
-    {
-        return $this->postJson("/api/v1/accounts/{$account->id}/api-tokens", [
-            'data' => [
-                'type' => 'api-tokens',
-                'attributes' => $attributes,
-            ],
-        ], [
-            'CONTENT_TYPE' => self::JSON_API_MEDIA_TYPE,
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
     }
 }

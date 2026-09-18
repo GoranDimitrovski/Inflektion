@@ -8,7 +8,6 @@ use App\Models\Account;
 use App\Models\Link;
 use App\Models\Program;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -16,15 +15,13 @@ final class LinksTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const JSON_API_MEDIA_TYPE = 'application/vnd.api+json';
-
     #[Test]
     public function itCreatesALink(): void
     {
         $account = $this->actingAsAccountMember();
         $program = Program::factory()->for($account)->create();
 
-        $response = $this->postJsonApi($account, [
+        $response = $this->postJsonApi($account, 'links', [
             'programId' => $program->id,
             'destinationUrl' => 'https://example.test/landing',
         ]);
@@ -53,7 +50,7 @@ final class LinksTest extends TestCase
         $account = $this->actingAsAccountMember();
         $otherProgram = Program::factory()->create();
 
-        $response = $this->postJsonApi($account, [
+        $response = $this->postJsonApi($account, 'links', [
             'programId' => $otherProgram->id,
             'destinationUrl' => 'https://example.test/landing',
         ]);
@@ -74,10 +71,7 @@ final class LinksTest extends TestCase
                 'id' => (string) $link->id,
                 'attributes' => ['status' => 'paused'],
             ],
-        ], [
-            'CONTENT_TYPE' => self::JSON_API_MEDIA_TYPE,
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
+        ], $this->jsonApiHeaders());
 
         $response->assertOk();
         $response->assertJsonPath('data.attributes.status', 'paused');
@@ -94,10 +88,7 @@ final class LinksTest extends TestCase
         Link::factory()->for($programA)->count(2)->create();
         Link::factory()->for($programB)->create();
 
-        $response = $this->getJson(
-            "/api/v1/accounts/{$account->id}/links?filter[programId]={$programA->id}",
-            ['Accept' => self::JSON_API_MEDIA_TYPE],
-        );
+        $response = $this->getJsonApi("/api/v1/accounts/{$account->id}/links?filter[programId]={$programA->id}");
 
         $response->assertOk();
         $response->assertJsonCount(2, 'data');
@@ -112,9 +103,7 @@ final class LinksTest extends TestCase
         $account = $this->actingAsAccountMember();
         Link::factory()->for(Program::factory()->for($account))->create();
 
-        $response = $this->getJson("/api/v1/accounts/{$account->id}/links", [
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
+        $response = $this->getJsonApi("/api/v1/accounts/{$account->id}/links");
 
         $response->assertOk();
         $response->assertJsonCount(1, 'data');
@@ -125,26 +114,8 @@ final class LinksTest extends TestCase
     {
         $account = Account::factory()->create();
 
-        $response = $this->getJson("/api/v1/accounts/{$account->id}/links", [
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
+        $response = $this->getJsonApi("/api/v1/accounts/{$account->id}/links");
 
         $response->assertUnauthorized();
-    }
-
-    /**
-     * @param  array<string, mixed>  $attributes
-     */
-    private function postJsonApi(Account $account, array $attributes): TestResponse
-    {
-        return $this->postJson("/api/v1/accounts/{$account->id}/links", [
-            'data' => [
-                'type' => 'links',
-                'attributes' => $attributes,
-            ],
-        ], [
-            'CONTENT_TYPE' => self::JSON_API_MEDIA_TYPE,
-            'Accept' => self::JSON_API_MEDIA_TYPE,
-        ]);
     }
 }

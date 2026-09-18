@@ -18,7 +18,7 @@ final class LogoutTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->deleteJson('/api/logout', [], ['Origin' => 'http://localhost:4200']);
+        $response = $this->actingAs($user)->deleteJson('/api/logout', [], $this->spaHeaders());
 
         $response->assertNoContent();
         $this->assertDatabaseHas('audit_entries', [

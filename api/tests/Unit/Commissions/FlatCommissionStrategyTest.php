@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Commissions;
 
-use App\Commissions\MisconfiguredCommissionException;
+use App\Commissions\CommissionException;
 use App\Commissions\Strategies\FlatCommissionStrategy;
 use App\Models\Conversion;
 use App\Models\Program;
@@ -36,7 +36,7 @@ final class FlatCommissionStrategyTest extends TestCase
         $strategy = new FlatCommissionStrategy;
         $result = $strategy->calculate($conversion, $program);
 
-        $this->assertTrue($result->equals(Money::of($flatMinorUnits, 'USD')));
+        $this->assertEquals(Money::of($flatMinorUnits, 'USD'), $result);
     }
 
     #[Test]
@@ -53,7 +53,7 @@ final class FlatCommissionStrategyTest extends TestCase
 
         $strategy = new FlatCommissionStrategy;
 
-        $this->expectException(MisconfiguredCommissionException::class);
+        $this->expectException(CommissionException::class);
 
         $strategy->calculate($conversion, $program);
     }

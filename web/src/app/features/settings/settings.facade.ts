@@ -16,7 +16,6 @@ import { firstApiError } from '../../shared/api-error';
 
 export type ApiTokenResource = V1ApiTokensIndexResponses[200]['data'][number];
 
-const JSON_API_HEADERS = { 'Content-Type': 'application/vnd.api+json' };
 
 function firstFieldError(error: unknown, fallback: string): string {
   const message = (error as { message?: string } | undefined)?.message;
@@ -58,7 +57,6 @@ export class SettingsFacade {
     const { data, error } = await v1ApiTokensStore({
       path: { account: String(accountId) },
       body: { data: { type: 'api-tokens', attributes: { name, abilities } } },
-      headers: JSON_API_HEADERS,
     });
 
     if (error || !data) {

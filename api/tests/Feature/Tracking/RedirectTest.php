@@ -62,7 +62,7 @@ final class RedirectTest extends TestCase
     #[Test]
     public function itReturns404ForAnInactiveLink(): void
     {
-        Link::factory()->create(['token' => 'inactive1', 'status' => 'expired']);
+        Link::factory()->create(['token' => 'inactive1', 'status' => 'paused']);
 
         $this->get('/r/inactive1')->assertNotFound();
     }

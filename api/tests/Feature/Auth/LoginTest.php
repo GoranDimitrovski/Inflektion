@@ -25,7 +25,7 @@ final class LoginTest extends TestCase
         $response = $this->postJson('/api/login', [
             'email' => 'ada@example.test',
             'password' => 'correct-password',
-        ], ['Origin' => 'http://localhost:4200']);
+        ], $this->spaHeaders());
 
         $response->assertNoContent();
         $this->assertAuthenticated();
@@ -46,7 +46,7 @@ final class LoginTest extends TestCase
         $response = $this->postJson('/api/login', [
             'email' => 'ada@example.test',
             'password' => 'wrong-password',
-        ], ['Origin' => 'http://localhost:4200']);
+        ], $this->spaHeaders());
 
         $response->assertUnprocessable();
         $response->assertJsonValidationErrors('email');
@@ -60,7 +60,7 @@ final class LoginTest extends TestCase
     #[Test]
     public function itRequiresAnEmailAndPassword(): void
     {
-        $response = $this->postJson('/api/login', [], ['Origin' => 'http://localhost:4200']);
+        $response = $this->postJson('/api/login', [], $this->spaHeaders());
 
         $response->assertUnprocessable();
         $response->assertJsonValidationErrors(['email', 'password']);

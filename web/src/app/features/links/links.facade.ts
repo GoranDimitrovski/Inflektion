@@ -7,7 +7,6 @@ import { firstApiError } from '../../shared/api-error';
 export type LinkResource = V1LinksIndexResponses[200]['data'][number];
 export type CreateLinkAttributes = V1LinksStoreData['body']['data']['attributes'];
 
-const JSON_API_HEADERS = { 'Content-Type': 'application/vnd.api+json' };
 
 @Injectable()
 export class LinksFacade {
@@ -44,7 +43,6 @@ export class LinksFacade {
     const { data, error } = await v1LinksStore({
       path: { account: String(accountId) },
       body: { data: { type: 'links', attributes } },
-      headers: JSON_API_HEADERS,
     });
 
     if (error) {
@@ -62,7 +60,6 @@ export class LinksFacade {
     const { data, error } = await v1LinksUpdate({
       path: { account: String(accountId), link: linkId },
       body: { data: { type: 'links', id: linkId, attributes: { status } } },
-      headers: JSON_API_HEADERS,
     });
 
     if (!error && data) {

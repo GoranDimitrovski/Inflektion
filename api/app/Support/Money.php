@@ -21,9 +21,4 @@ final class Money
     {
         return new self($minorUnits, strtoupper($currency));
     }
-
-    public function equals(self $other): bool
-    {
-        return $this->minorUnits === $other->minorUnits && $this->currency === $other->currency;
-    }
 }

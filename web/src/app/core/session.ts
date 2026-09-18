@@ -50,6 +50,17 @@ export class SessionService {
     return this.permissions().includes(permission);
   }
 
+  /** The active account's id. Pages under `accounts/:accountId` always have one — the route guard resolves it first. */
+  requireAccountId(): number {
+    const accountId = this.activeMembership()?.account.id;
+
+    if (accountId === undefined) {
+      throw new Error('No active account — the accounts/:accountId route guard should have resolved one.');
+    }
+
+    return accountId;
+  }
+
   setActiveAccountId(accountId: number): void {
     this.activeAccountIdSignal.set(accountId);
   }

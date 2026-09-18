@@ -27,7 +27,6 @@ final class DemoStoreAdapter implements StorefrontAdapter
             externalId: (string) $payload['order_id'],
             clickId: $payload['sub_id'] !== '' ? (string) $payload['sub_id'] : null,
             amount: Money::of((int) round(((float) $payload['amount']) * 100), (string) $payload['currency']),
-            eventType: (string) $payload['event'],
         );
     }
 

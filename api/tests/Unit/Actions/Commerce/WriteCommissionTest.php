@@ -39,7 +39,7 @@ final class WriteCommissionTest extends TestCase
         $entry = app(WriteCommission::class)->handle($conversion);
 
         $this->assertInstanceOf(CommissionLedgerEntry::class, $entry);
-        $this->assertTrue($entry->amount->equals(Money::of(1000, 'USD')));
+        $this->assertEquals(Money::of(1000, 'USD'), $entry->amount);
         $this->assertSame($conversion->id, $entry->conversion_id);
         $this->assertSame($program->id, $entry->program_id);
         $this->assertSame($program->account_id, $entry->account_id);

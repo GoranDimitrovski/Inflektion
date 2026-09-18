@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Commissions;
 
+use App\Commissions\CommissionException;
 use App\Commissions\CommissionStrategyRegistry;
 use App\Commissions\Strategies\FlatCommissionStrategy;
 use App\Commissions\Strategies\PercentageCommissionStrategy;
-use App\Commissions\UnknownCommissionStrategyException;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -30,7 +30,7 @@ final class CommissionStrategyRegistryTest extends TestCase
     {
         $registry = new CommissionStrategyRegistry(['flat' => FlatCommissionStrategy::class]);
 
-        $this->expectException(UnknownCommissionStrategyException::class);
+        $this->expectException(CommissionException::class);
 
         $registry->resolve('does-not-exist');
     }
@@ -40,7 +40,7 @@ final class CommissionStrategyRegistryTest extends TestCase
     {
         $registry = new CommissionStrategyRegistry(['flat' => FlatCommissionStrategy::class]);
 
-        $this->expectException(UnknownCommissionStrategyException::class);
+        $this->expectException(CommissionException::class);
 
         $registry->resolve(null);
     }

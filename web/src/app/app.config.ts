@@ -27,6 +27,12 @@ client.interceptors.request.use((request) => {
     request.headers.set('X-XSRF-TOKEN', decodeURIComponent(match[1]));
   }
 
+  // The generated SDK hardcodes "application/json" on every write; the /v1
+  // JSON:API routes reject anything but the vendor media type.
+  if (request.url.includes('/v1/') && request.headers.has('Content-Type')) {
+    request.headers.set('Content-Type', 'application/vnd.api+json');
+  }
+
   return request;
 });
 

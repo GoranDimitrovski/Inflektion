@@ -25,7 +25,7 @@ final class RegisterTest extends TestCase
             'password' => 'correct-password',
             'password_confirmation' => 'correct-password',
             'accountName' => 'Acme Inc',
-        ], ['Origin' => 'http://localhost:4200']);
+        ], $this->spaHeaders());
 
         $response->assertNoContent();
         $this->assertAuthenticated();
@@ -56,7 +56,7 @@ final class RegisterTest extends TestCase
             'password' => 'correct-password',
             'password_confirmation' => 'correct-password',
             'accountName' => 'Acme Inc',
-        ], ['Origin' => 'http://localhost:4200']);
+        ], $this->spaHeaders());
 
         $response->assertUnprocessable();
         $response->assertJsonValidationErrors('email');
@@ -67,7 +67,7 @@ final class RegisterTest extends TestCase
     #[Test]
     public function itRequiresAllFields(): void
     {
-        $response = $this->postJson('/api/register', [], ['Origin' => 'http://localhost:4200']);
+        $response = $this->postJson('/api/register', [], $this->spaHeaders());
 
         $response->assertUnprocessable();
         $response->assertJsonValidationErrors(['name', 'email', 'password', 'accountName']);
@@ -82,7 +82,7 @@ final class RegisterTest extends TestCase
             'password' => 'correct-password',
             'password_confirmation' => 'does-not-match',
             'accountName' => 'Acme Inc',
-        ], ['Origin' => 'http://localhost:4200']);
+        ], $this->spaHeaders());
 
         $response->assertUnprocessable();
         $response->assertJsonValidationErrors('password');

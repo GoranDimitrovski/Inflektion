@@ -8,20 +8,15 @@ use App\Access\AuditEntry;
 use App\Models\CommissionLedgerEntry;
 use App\Models\PayoutBatch;
 use App\Models\User;
-use App\Support\Clock;
 use App\Support\Outbox\OutboxMessage;
 use Illuminate\Support\Facades\DB;
 
 final class ClosePayoutBatch
 {
-    public function __construct(
-        private readonly Clock $clock,
-    ) {}
-
     public function handle(PayoutBatch $batch, ?User $actor = null): PayoutBatch
     {
         return DB::transaction(function () use ($batch, $actor): PayoutBatch {
-            $now = $this->clock->now();
+            $now = now();
 
             $batch->close($now);
 
