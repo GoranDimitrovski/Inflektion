@@ -20,12 +20,11 @@ COPY --from=composer:2.8.9 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-COPY composer.json composer.lock ./
-RUN composer install --no-scripts --no-interaction --prefer-dist --no-progress
-
-COPY . .
-
-RUN composer dump-autoload --optimize
+# No COPY/composer install here: docker-compose.yml bind-mounts ./api over
+# /app for every real use of this image (local dev and CI alike), which
+# shadows anything baked in at this point — so building it in just wastes
+# time on every image build. `composer install` runs at container start
+# instead (see the Makefile / CI), writing straight into the bind mount.
 
 EXPOSE 8000
 
