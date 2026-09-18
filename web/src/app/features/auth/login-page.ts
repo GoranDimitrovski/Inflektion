@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 import { FormField, form, required, submit } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { SessionService } from '../../core/session';
@@ -19,9 +19,17 @@ interface ChallengeModel {
   styleUrl: './auth-form.scss',
   templateUrl: './login-page.html',
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   protected readonly session = inject(SessionService);
   private readonly router = inject(Router);
+
+  ngOnInit(): void {
+    // Reached while already signed in (the root path redirects here) — go
+    // straight through instead of showing the form again.
+    if (this.session.memberships().length > 0) {
+      void this.navigateToFirstAccount();
+    }
+  }
 
   protected readonly model = signal<LoginModel>({ email: '', password: '' });
 

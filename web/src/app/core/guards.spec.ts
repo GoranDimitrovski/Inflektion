@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, convertToParamMap, provideRouter, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { routes } from '../app.routes';
 import { requireAuth, requirePermission, setActiveAccountFromRoute } from './guards';
 import { SessionService } from './session';
 
@@ -106,5 +107,28 @@ describe('guards', () => {
 
       expect(router.serializeUrl(result as UrlTree)).toBe('/access-denied');
     });
+  });
+});
+
+/**
+ * The guard specs above only build a UrlTree, so they stayed green while
+ * /access-denied had no route at all and every denial threw NG04002.
+ */
+describe('redirect targets', () => {
+  beforeEach(() => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ providers: [provideRouter(routes)] });
+  });
+
+  it('lands on /access-denied rather than falling through to the wildcard', async () => {
+    const router = TestBed.inject(Router);
+
+    await router.navigateByUrl('/access-denied');
+
+    expect(router.url).toBe('/access-denied');
+  });
+
+  it('resolves an unknown URL instead of throwing', async () => {
+    await expect(TestBed.inject(Router).navigateByUrl('/no-such-page')).resolves.toBe(true);
   });
 });

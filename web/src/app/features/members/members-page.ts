@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@ang
 import { FormField, form, required, submit } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { accountsLeave } from '../../api/sdk.gen';
+import { firstApiError } from '../../shared/api-error';
 import { DataTable } from '../../shared/data-table';
 import { Modal } from '../../shared/modal';
 import { SessionService } from '../../core/session';
@@ -48,7 +49,7 @@ export class MembersPage implements OnInit {
     // Listing requires members.manage; a plain Member/Viewer can still reach
     // this page to leave the account, so the load is skipped for them.
     if (this.canManage()) {
-      void this.facade.load(this.session.requireAccountId());
+      void this.facade.load();
     }
   }
 
@@ -63,10 +64,7 @@ export class MembersPage implements OnInit {
     const { error } = await accountsLeave({ path: { account: String(this.session.requireAccountId()) } });
 
     if (error) {
-      this.leaveError.set(
-        (error as { errors?: { detail?: string }[] }).errors?.[0]?.detail ??
-          'Failed to leave this account.',
-      );
+      this.leaveError.set(firstApiError(error, 'Failed to leave this account.'));
       this.leaving.set(false);
 
       return;
@@ -85,11 +83,7 @@ export class MembersPage implements OnInit {
     this.inviteError.set(null);
 
     await submit(this.inviteForm, async () => {
-      const error = await this.facade.invite(
-        this.session.requireAccountId(),
-        this.inviteModel().email,
-        this.inviteModel().role,
-      );
+      const error = await this.facade.invite(this.inviteModel().email, this.inviteModel().role);
 
       if (error) {
         this.inviteError.set(error);
@@ -103,18 +97,18 @@ export class MembersPage implements OnInit {
   }
 
   protected async onChangeRole(membership: MembershipResource, role: string): Promise<void> {
-    await this.facade.changeRole(this.session.requireAccountId(), membership.id, role);
+    await this.facade.changeRole(membership.id, role);
   }
 
   protected async onRevokeInvitation(invitation: InvitationResource): Promise<void> {
-    await this.facade.revokeInvitation(this.session.requireAccountId(), invitation.id);
+    await this.facade.revokeInvitation(invitation.id);
   }
 
   /** Dangerous action: requires typing the member's email before it fires — see the project's "typed confirmation" rule. */
   protected confirmRemoval(membership: MembershipResource, typedEmail: string): void {
     if (typedEmail.trim().toLowerCase() === membership.attributes.userEmail.toLowerCase()) {
       void this.facade
-        .revokeMembership(this.session.requireAccountId(), membership.id)
+        .revokeMembership(membership.id)
         .then(() => this.confirmingRemovalOf.set(null));
     }
   }

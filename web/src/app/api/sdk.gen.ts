@@ -43,7 +43,14 @@ export const v1ApiTokensStore = <ThrowOnError extends boolean = false>(options: 
  */
 export const v1ApiTokensDestroy = <ThrowOnError extends boolean = false>(options: Options<V1ApiTokensDestroyData, ThrowOnError>): RequestResult<V1ApiTokensDestroyResponses, V1ApiTokensDestroyErrors, ThrowOnError> => (options.client ?? client).delete<V1ApiTokensDestroyResponses, V1ApiTokensDestroyErrors, ThrowOnError>({ url: '/v1/accounts/{account}/api-tokens/{api_token}', ...options });
 
-export const twoFactorConfirm = <ThrowOnError extends boolean = false>(options?: Options<TwoFactorConfirmData, ThrowOnError>): RequestResult<TwoFactorConfirmResponses, TwoFactorConfirmErrors, ThrowOnError> => (options?.client ?? client).post<TwoFactorConfirmResponses, TwoFactorConfirmErrors, ThrowOnError>({ url: '/confirmed-two-factor-authentication', ...options });
+export const twoFactorConfirm = <ThrowOnError extends boolean = false>(options: Options<TwoFactorConfirmData, ThrowOnError>): RequestResult<TwoFactorConfirmResponses, TwoFactorConfirmErrors, ThrowOnError> => (options.client ?? client).post<TwoFactorConfirmResponses, TwoFactorConfirmErrors, ThrowOnError>({
+    url: '/confirmed-two-factor-authentication',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
 
 export const passwordEmail = <ThrowOnError extends boolean = false>(options: Options<PasswordEmailData, ThrowOnError>): RequestResult<PasswordEmailResponses, PasswordEmailErrors, ThrowOnError> => (options.client ?? client).post<PasswordEmailResponses, PasswordEmailErrors, ThrowOnError>({
     url: '/forgot-password',

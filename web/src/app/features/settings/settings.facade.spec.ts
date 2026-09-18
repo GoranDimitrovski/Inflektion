@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { SessionService } from '../../core/session';
 import { SettingsFacade } from './settings.facade';
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -18,7 +19,9 @@ describe('SettingsFacade', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [SettingsFacade] });
+    TestBed.configureTestingModule({
+      providers: [SettingsFacade, { provide: SessionService, useValue: { requireAccountId: () => 5 } }],
+    });
     fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
   });
@@ -32,7 +35,7 @@ describe('SettingsFacade', () => {
       fetchMock.mockResolvedValueOnce(jsonResponse({ data: [token] }));
 
       const facade = TestBed.inject(SettingsFacade);
-      await facade.loadApiTokens(5);
+      await facade.loadApiTokens();
 
       expect(facade.apiTokens()).toEqual([token]);
       expect(facade.tokensError()).toBeNull();
@@ -42,7 +45,7 @@ describe('SettingsFacade', () => {
       fetchMock.mockResolvedValueOnce(jsonResponse({ errors: [{ detail: 'Account not found.' }] }, 404));
 
       const facade = TestBed.inject(SettingsFacade);
-      await facade.loadApiTokens(5);
+      await facade.loadApiTokens();
 
       expect(facade.tokensError()).toBe('Account not found.');
     });
@@ -53,7 +56,7 @@ describe('SettingsFacade', () => {
       fetchMock.mockResolvedValueOnce(jsonResponse({ data: token, meta: { plainTextToken: 'plain-secret' } }));
 
       const facade = TestBed.inject(SettingsFacade);
-      const result = await facade.createApiToken(5, 'CI', ['programs.read']);
+      const result = await facade.createApiToken('CI', ['programs.read']);
 
       expect(result).toEqual({ token, plainTextToken: 'plain-secret' });
       expect(facade.apiTokens()).toEqual([token]);
@@ -63,7 +66,7 @@ describe('SettingsFacade', () => {
       fetchMock.mockResolvedValueOnce(jsonResponse({ errors: [{ detail: 'Cannot grant abilities you do not have.' }] }, 422));
 
       const facade = TestBed.inject(SettingsFacade);
-      const result = await facade.createApiToken(5, 'CI', ['members.manage']);
+      const result = await facade.createApiToken('CI', ['members.manage']);
 
       expect(result).toEqual({ error: 'Cannot grant abilities you do not have.' });
       expect(facade.apiTokens()).toEqual([]);
@@ -77,9 +80,9 @@ describe('SettingsFacade', () => {
         .mockResolvedValueOnce(new Response(null, { status: 204 }));
 
       const facade = TestBed.inject(SettingsFacade);
-      await facade.createApiToken(5, 'CI', []);
+      await facade.createApiToken('CI', []);
 
-      expect(await facade.revokeApiToken(5, token.id)).toBe(true);
+      expect(await facade.revokeApiToken(token.id)).toBe(true);
       expect(facade.apiTokens()).toEqual([]);
     });
 
@@ -88,7 +91,7 @@ describe('SettingsFacade', () => {
 
       const facade = TestBed.inject(SettingsFacade);
 
-      expect(await facade.revokeApiToken(5, token.id)).toBe(false);
+      expect(await facade.revokeApiToken(token.id)).toBe(false);
     });
   });
 

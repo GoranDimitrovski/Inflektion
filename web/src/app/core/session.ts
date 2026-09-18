@@ -35,8 +35,8 @@ export class SessionService {
   readonly twoFactorPending = signal(false);
 
   readonly isAuthenticated = computed(() => this.userSignal() !== null);
-  readonly user = computed(() => this.userSignal());
-  readonly memberships = computed(() => this.membershipsSignal());
+  readonly user = this.userSignal.asReadonly();
+  readonly memberships = this.membershipsSignal.asReadonly();
 
   readonly activeMembership = computed(() => {
     const accountId = this.activeAccountIdSignal();
@@ -73,12 +73,7 @@ export class SessionService {
   async login(email: string, password: string): Promise<boolean> {
     this.twoFactorPending.set(false);
 
-    const response = await fetch(`${this.apiOrigin()}/login`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: this.jsonHeaders(),
-      body: JSON.stringify({ email, password }),
-    });
+    const response = await this.send('/login', { email, password });
 
     if (!response.ok) {
       return false;
@@ -102,12 +97,7 @@ export class SessionService {
   }
 
   async twoFactorChallenge(payload: { code?: string; recovery_code?: string }): Promise<boolean> {
-    const response = await fetch(`${this.apiOrigin()}/two-factor-challenge`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: this.jsonHeaders(),
-      body: JSON.stringify(payload),
-    });
+    const response = await this.send('/two-factor-challenge', payload);
 
     if (!response.ok) {
       return false;
@@ -126,12 +116,7 @@ export class SessionService {
     password_confirmation: string;
     accountName: string;
   }): Promise<boolean> {
-    const response = await fetch(`${this.apiOrigin()}/register`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: this.jsonHeaders(),
-      body: JSON.stringify(payload),
-    });
+    const response = await this.send('/register', payload);
 
     if (!response.ok) {
       return false;
@@ -144,14 +129,7 @@ export class SessionService {
 
   /** Always resolves true regardless of whether the email is registered — the backend doesn't reveal that either. */
   async requestPasswordReset(email: string): Promise<boolean> {
-    const response = await fetch(`${this.apiOrigin()}/forgot-password`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: this.jsonHeaders(),
-      body: JSON.stringify({ email }),
-    });
-
-    return response.ok;
+    return (await this.send('/forgot-password', { email })).ok;
   }
 
   async resetPassword(payload: {
@@ -160,27 +138,26 @@ export class SessionService {
     password: string;
     password_confirmation: string;
   }): Promise<boolean> {
-    const response = await fetch(`${this.apiOrigin()}/reset-password`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: this.jsonHeaders(),
-      body: JSON.stringify(payload),
-    });
-
-    return response.ok;
+    return (await this.send('/reset-password', payload)).ok;
   }
 
   async logout(): Promise<void> {
-    await fetch(`${this.apiOrigin()}/logout`, {
-      method: 'DELETE',
-      credentials: 'include',
-      headers: this.jsonHeaders(),
-    });
+    await this.send('/logout', undefined, 'DELETE');
 
     this.userSignal.set(null);
     this.membershipsSignal.set([]);
     this.activeAccountIdSignal.set(null);
     this.twoFactorPending.set(false);
+  }
+
+  /** Every auth endpoint is the same cookie-session call with the same CSRF/JSON headers. */
+  private send(path: string, body?: unknown, method = 'POST'): Promise<Response> {
+    return fetch(`${this.apiOrigin()}${path}`, {
+      method,
+      credentials: 'include',
+      headers: this.jsonHeaders(),
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    });
   }
 
   async load(): Promise<boolean> {

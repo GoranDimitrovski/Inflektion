@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { v1ProgramsIndex, v1ProgramsStore } from '../../api/sdk.gen';
 import type { V1ProgramsIndexResponses, V1ProgramsStoreData } from '../../api/types.gen';
+import { SessionService } from '../../core/session';
 import { firstApiError } from '../../shared/api-error';
 
 /** A single `programs` resource object, JSON:API-shaped (`data.attributes.*`). */
@@ -16,13 +17,18 @@ export class ProgramsFacade {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  async load(accountId: number): Promise<void> {
+  private readonly session = inject(SessionService);
+
+  /** Route-scoped: the `accounts/:accountId` guard has already resolved the account these calls belong to. */
+  private account(): string {
+    return String(this.session.requireAccountId());
+  }
+
+  async load(): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
 
-    const { data, error } = await v1ProgramsIndex({
-      path: { account: String(accountId) },
-    });
+    const { data, error } = await v1ProgramsIndex({ path: { account: this.account() } });
 
     if (error) {
       this.error.set(firstApiError(error, 'Failed to load programs.'));
@@ -33,11 +39,11 @@ export class ProgramsFacade {
     this.loading.set(false);
   }
 
-  async create(accountId: number, attributes: CreateProgramAttributes): Promise<boolean> {
+  async create(attributes: CreateProgramAttributes): Promise<boolean> {
     this.error.set(null);
 
     const { data, error } = await v1ProgramsStore({
-      path: { account: String(accountId) },
+      path: { account: this.account() },
       body: { data: { type: 'programs', attributes } },
     });
 

@@ -4,15 +4,7 @@ import { client } from './api/client.gen';
 import { routes } from './app.routes';
 import { SessionService } from './core/session';
 
-// The API rejects any request whose Content-Type/Accept isn't exactly
-// "application/vnd.api+json"; the generated client defaults to "application/json".
-client.setConfig({
-  credentials: 'include',
-  headers: {
-    Accept: 'application/vnd.api+json',
-    'Content-Type': 'application/vnd.api+json',
-  },
-});
+client.setConfig({ credentials: 'include' });
 
 // Sanctum's stateful/session auth requires the XSRF-TOKEN cookie (primed by
 // SessionService.bootstrap() via /sanctum/csrf-cookie) echoed back as
@@ -27,10 +19,15 @@ client.interceptors.request.use((request) => {
     request.headers.set('X-XSRF-TOKEN', decodeURIComponent(match[1]));
   }
 
-  // The generated SDK hardcodes "application/json" on every write; the /v1
-  // JSON:API routes reject anything but the vendor media type.
-  if (request.url.includes('/v1/') && request.headers.has('Content-Type')) {
-    request.headers.set('Content-Type', 'application/vnd.api+json');
+  // The generated SDK hardcodes "application/json"; the /v1 JSON:API routes
+  // reject anything but the vendor media type. Only /v1 — the auth and 2FA
+  // routes outside it are plain JSON and reject the vendor type instead.
+  if (request.url.includes('/v1/')) {
+    request.headers.set('Accept', 'application/vnd.api+json');
+
+    if (request.headers.has('Content-Type')) {
+      request.headers.set('Content-Type', 'application/vnd.api+json');
+    }
   }
 
   return request;

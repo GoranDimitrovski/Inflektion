@@ -14,10 +14,11 @@ final class ConfirmedTwoFactorAuthenticationController extends Controller
 {
     public function store(Request $request, ConfirmTwoFactorAuthentication $confirm): Response
     {
+        $validated = $request->validate(['code' => ['required', 'string']]);
 
         $user = $request->user();
 
-        $confirm($user, (string) $request->input('code'));
+        $confirm($user, $validated['code']);
 
         AuditEntry::record(null, $user->id, 'access.2fa_confirmed', null, [], now());
 

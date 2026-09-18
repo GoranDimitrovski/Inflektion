@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 import { FormField, form, required, submit } from '@angular/forms/signals';
-import { SessionService } from '../../core/session';
 import { Modal } from '../../shared/modal';
 import { ProgramsFacade } from './programs.facade';
 
@@ -19,8 +18,6 @@ interface CreateProgramModel {
 })
 export class ProgramsPage implements OnInit {
   protected readonly facade = inject(ProgramsFacade);
-  private readonly session = inject(SessionService);
-
   protected readonly showCreateModal = signal(false);
 
   protected readonly model = signal<CreateProgramModel>({ name: '', slug: '' });
@@ -33,16 +30,14 @@ export class ProgramsPage implements OnInit {
   protected readonly submitting = signal(false);
 
   ngOnInit(): void {
-    // The `accounts/:accountId` route guard has already resolved the
-    // active membership before this component can render.
-    void this.facade.load(this.session.requireAccountId());
+    void this.facade.load();
   }
 
   protected async onSubmit(): Promise<void> {
     this.submitting.set(true);
 
     await submit(this.createForm, async () => {
-      const created = await this.facade.create(this.session.requireAccountId(), this.model());
+      const created = await this.facade.create(this.model());
 
       if (created) {
         this.model.set({ name: '', slug: '' });

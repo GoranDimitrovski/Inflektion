@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import {
   v1InvitationsDestroy,
   v1InvitationsIndex,
@@ -8,11 +8,11 @@ import {
   v1MembershipsUpdate,
 } from '../../api/sdk.gen';
 import type { V1InvitationsIndexResponses, V1MembershipsIndexResponses } from '../../api/types.gen';
+import { SessionService } from '../../core/session';
 import { firstApiError } from '../../shared/api-error';
 
 export type MembershipResource = V1MembershipsIndexResponses[200]['data'][number];
 export type InvitationResource = V1InvitationsIndexResponses[200]['data'][number];
-
 
 @Injectable()
 export class MembersFacade {
@@ -21,13 +21,20 @@ export class MembersFacade {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  async load(accountId: number): Promise<void> {
+  private readonly session = inject(SessionService);
+
+  /** Route-scoped: the `accounts/:accountId` guard has already resolved the account these calls belong to. */
+  private account(): string {
+    return String(this.session.requireAccountId());
+  }
+
+  async load(): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
 
     const [members, pending] = await Promise.all([
-      v1MembershipsIndex({ path: { account: String(accountId) } }),
-      v1InvitationsIndex({ path: { account: String(accountId) } }),
+      v1MembershipsIndex({ path: { account: this.account() } }),
+      v1InvitationsIndex({ path: { account: this.account() } }),
     ]);
 
     if (members.error || pending.error) {
@@ -40,9 +47,9 @@ export class MembersFacade {
     this.loading.set(false);
   }
 
-  async invite(accountId: number, email: string, role: string): Promise<string | null> {
+  async invite(email: string, role: string): Promise<string | null> {
     const { data, error } = await v1InvitationsStore({
-      path: { account: String(accountId) },
+      path: { account: this.account() },
       body: { data: { type: 'invitations', attributes: { email, role } } },
     });
 
@@ -57,9 +64,9 @@ export class MembersFacade {
     return null;
   }
 
-  async revokeInvitation(accountId: number, invitationId: string): Promise<boolean> {
+  async revokeInvitation(invitationId: string): Promise<boolean> {
     const { error } = await v1InvitationsDestroy({
-      path: { account: String(accountId), invitation: invitationId },
+      path: { account: this.account(), invitation: invitationId },
     });
 
     if (error) {
@@ -71,9 +78,9 @@ export class MembersFacade {
     return true;
   }
 
-  async changeRole(accountId: number, membershipId: string, role: string): Promise<string | null> {
+  async changeRole(membershipId: string, role: string): Promise<string | null> {
     const { data, error } = await v1MembershipsUpdate({
-      path: { account: String(accountId), membership: membershipId },
+      path: { account: this.account(), membership: membershipId },
       body: { data: { type: 'memberships', id: membershipId, attributes: { role } } },
     });
 
@@ -90,9 +97,9 @@ export class MembersFacade {
     return null;
   }
 
-  async revokeMembership(accountId: number, membershipId: string): Promise<string | null> {
+  async revokeMembership(membershipId: string): Promise<string | null> {
     const { error } = await v1MembershipsDestroy({
-      path: { account: String(accountId), membership: membershipId },
+      path: { account: this.account(), membership: membershipId },
     });
 
     if (error) {

@@ -12,9 +12,11 @@ use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
 
 final class TwoFactorRecoveryCodesController extends Controller
 {
+    /**
+     * @response array{data: list<string>}
+     */
     public function index(Request $request): JsonResponse
     {
-
         $user = $request->user();
 
         if ($user->two_factor_secret === null || $user->two_factor_recovery_codes === null) {
@@ -24,9 +26,11 @@ final class TwoFactorRecoveryCodesController extends Controller
         return response()->json(['data' => $user->recoveryCodes()]);
     }
 
+    /**
+     * @response array{data: list<string>}
+     */
     public function store(Request $request, GenerateNewRecoveryCodes $generate): JsonResponse
     {
-
         $user = $request->user();
 
         $generate($user);

@@ -69,9 +69,18 @@ export type TwoFactorLoginRequest = {
 
 export type InvitationsAcceptData = {
     body?: AcceptInvitationRequest & {
-        name: string;
-        password: string;
-        password_confirmation: string;
+        /**
+         * Only when accepting as a new user.
+         */
+        name?: string;
+        /**
+         * Only when accepting as a new user.
+         */
+        password?: string;
+        /**
+         * Only when accepting as a new user.
+         */
+        password_confirmation?: string;
     };
     path: {
         token: string;
@@ -277,7 +286,9 @@ export type V1ApiTokensDestroyResponses = {
 export type V1ApiTokensDestroyResponse = V1ApiTokensDestroyResponses[keyof V1ApiTokensDestroyResponses];
 
 export type TwoFactorConfirmData = {
-    body?: never;
+    body: {
+        code: string;
+    };
     path?: never;
     query?: never;
     url: '/confirmed-two-factor-authentication';
@@ -292,6 +303,21 @@ export type TwoFactorConfirmErrors = {
          * Error overview.
          */
         message: string;
+    };
+    /**
+     * Validation error
+     */
+    422: {
+        /**
+         * Errors overview.
+         */
+        message: string;
+        /**
+         * A detailed description of each field that failed validation.
+         */
+        errors: {
+            [key: string]: Array<string>;
+        };
     };
 };
 
@@ -562,7 +588,12 @@ export type V1LinksIndexData = {
     path: {
         account: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Only return links belonging to this program.
+         */
+        'filter[programId]'?: string;
+    };
     url: '/v1/accounts/{account}/links';
 };
 
@@ -1424,8 +1455,6 @@ export type TwoFactorRecoveryCodesIndexError = TwoFactorRecoveryCodesIndexErrors
 
 export type TwoFactorRecoveryCodesIndexResponses = {
     200: {
-        data: Array<unknown>;
-    } | {
         data: Array<string>;
     };
 };
@@ -1455,7 +1484,7 @@ export type TwoFactorRecoveryCodesStoreError = TwoFactorRecoveryCodesStoreErrors
 
 export type TwoFactorRecoveryCodesStoreResponses = {
     200: {
-        data: Array<unknown>;
+        data: Array<string>;
     };
 };
 
@@ -1494,7 +1523,7 @@ export type TwoFactorSecretKeyError = TwoFactorSecretKeyErrors[keyof TwoFactorSe
 export type TwoFactorSecretKeyResponses = {
     200: {
         data: {
-            secretKey: unknown;
+            secretKey: string;
         };
     };
 };

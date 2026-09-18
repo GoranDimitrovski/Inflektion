@@ -1,7 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 import { FormField, form, required, submit } from '@angular/forms/signals';
-import { SessionService } from '../../core/session';
 import { DataTable } from '../../shared/data-table';
 import { Menu } from '../../shared/menu';
 import { Modal } from '../../shared/modal';
@@ -22,7 +21,6 @@ interface CreateLinkModel {
 })
 export class LinksPage implements OnInit {
   protected readonly facade = inject(LinksFacade);
-  protected readonly session = inject(SessionService);
 
   protected readonly selectedProgramId = signal<number | null>(null);
   protected readonly createError = signal<string | null>(null);
@@ -35,7 +33,7 @@ export class LinksPage implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    await this.facade.loadPrograms(this.session.requireAccountId());
+    await this.facade.loadPrograms();
 
     const firstProgramId = this.facade.programs()[0]?.id;
 
@@ -47,7 +45,7 @@ export class LinksPage implements OnInit {
   protected async onSelectProgram(programId: number | string): Promise<void> {
     const id = Number(programId);
     this.selectedProgramId.set(id);
-    await this.facade.loadLinks(this.session.requireAccountId(), id);
+    await this.facade.loadLinks(id);
   }
 
   protected async onSubmit(): Promise<void> {
@@ -63,7 +61,7 @@ export class LinksPage implements OnInit {
     await submit(this.createForm, async () => {
       const { destinationUrl, personalizationStrategy } = this.model();
 
-      const error = await this.facade.create(this.session.requireAccountId(), {
+      const error = await this.facade.create({
         programId,
         destinationUrl,
         ...(personalizationStrategy ? { personalizationStrategy } : {}),
@@ -83,7 +81,7 @@ export class LinksPage implements OnInit {
   protected async onToggleStatus(link: LinkResource): Promise<void> {
     const nextStatus = link.attributes.status === 'active' ? 'paused' : 'active';
 
-    await this.facade.updateStatus(this.session.requireAccountId(), link.id, nextStatus);
+    await this.facade.updateStatus(link.id, nextStatus);
   }
 
   protected async copyRedirectUrl(url: string): Promise<void> {

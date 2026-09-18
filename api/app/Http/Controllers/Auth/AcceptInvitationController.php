@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\AcceptInvitationRequest;
 use App\Models\Invitation;
 use App\Models\User;
+use Dedoc\Scramble\Attributes\BodyParameter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -22,6 +23,12 @@ final class AcceptInvitationController extends Controller
         private readonly PermissionMap $permissions,
     ) {}
 
+    // Declared explicitly because the guest branch below validates these as
+    // `required`; inferring from that would mark them required for the
+    // signed-in caller too, who sends an empty body.
+    #[BodyParameter(name: 'name', description: 'Only when accepting as a new user.', required: false, type: 'string')]
+    #[BodyParameter(name: 'password', description: 'Only when accepting as a new user.', required: false, type: 'string')]
+    #[BodyParameter(name: 'password_confirmation', description: 'Only when accepting as a new user.', required: false, type: 'string')]
     public function __invoke(AcceptInvitationRequest $request, string $token): JsonResponse
     {
         $invitation = Invitation::query()

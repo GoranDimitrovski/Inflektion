@@ -3,6 +3,7 @@ import { FormField, form, required, submit } from '@angular/forms/signals';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { invitationsAccept, invitationsShow } from '../../api/sdk.gen';
 import { SessionService } from '../../core/session';
+import { firstApiError } from '../../shared/api-error';
 
 interface RegisterModel {
   name: string;
@@ -81,19 +82,13 @@ export class AcceptInvitationPage implements OnInit {
 
     const { data, error } = await invitationsAccept({
       path: { token: this.token },
-      // Generated type marks name/password as always-required (Scramble merged
-      // two validation branches); both are actually optional per request.
-      body: body as never,
+      body,
     });
 
     this.submitting.set(false);
 
     if (error) {
-      this.error.set(
-        (error as { errors?: { detail?: string }[]; message?: string }).errors?.[0]?.detail ??
-          (error as { message?: string }).message ??
-          'Failed to accept this invitation.',
-      );
+      this.error.set(firstApiError(error, 'Failed to accept this invitation.'));
 
       return;
     }

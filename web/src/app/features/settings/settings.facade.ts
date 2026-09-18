@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import {
   twoFactorConfirm,
   twoFactorDisable,
@@ -12,16 +12,10 @@ import {
   v1ApiTokensStore,
 } from '../../api/sdk.gen';
 import type { V1ApiTokensIndexResponses } from '../../api/types.gen';
+import { SessionService } from '../../core/session';
 import { firstApiError } from '../../shared/api-error';
 
 export type ApiTokenResource = V1ApiTokensIndexResponses[200]['data'][number];
-
-
-function firstFieldError(error: unknown, fallback: string): string {
-  const message = (error as { message?: string } | undefined)?.message;
-
-  return message ?? fallback;
-}
 
 @Injectable()
 export class SettingsFacade {
@@ -34,11 +28,18 @@ export class SettingsFacade {
   readonly recoveryCodes = signal<string[]>([]);
   readonly twoFactorError = signal<string | null>(null);
 
-  async loadApiTokens(accountId: number): Promise<void> {
+  private readonly session = inject(SessionService);
+
+  /** Route-scoped: the `accounts/:accountId` guard has already resolved the account these calls belong to. */
+  private account(): string {
+    return String(this.session.requireAccountId());
+  }
+
+  async loadApiTokens(): Promise<void> {
     this.loadingTokens.set(true);
     this.tokensError.set(null);
 
-    const { data, error } = await v1ApiTokensIndex({ path: { account: String(accountId) } });
+    const { data, error } = await v1ApiTokensIndex({ path: { account: this.account() } });
 
     if (error) {
       this.tokensError.set(firstApiError(error, 'Failed to load API tokens.'));
@@ -50,12 +51,11 @@ export class SettingsFacade {
   }
 
   async createApiToken(
-    accountId: number,
     name: string,
     abilities: string[],
   ): Promise<{ token: ApiTokenResource; plainTextToken: string } | { error: string }> {
     const { data, error } = await v1ApiTokensStore({
-      path: { account: String(accountId) },
+      path: { account: this.account() },
       body: { data: { type: 'api-tokens', attributes: { name, abilities } } },
     });
 
@@ -68,9 +68,9 @@ export class SettingsFacade {
     return { token: data.data, plainTextToken: data.meta.plainTextToken };
   }
 
-  async revokeApiToken(accountId: number, tokenId: string): Promise<boolean> {
+  async revokeApiToken(tokenId: string): Promise<boolean> {
     const { error } = await v1ApiTokensDestroy({
-      path: { account: String(accountId), api_token: tokenId },
+      path: { account: this.account(), api_token: tokenId },
     });
 
     if (error) {
@@ -89,7 +89,7 @@ export class SettingsFacade {
     const { error } = await twoFactorEnable();
 
     if (error) {
-      this.twoFactorError.set(firstFieldError(error, 'Failed to start two-factor setup.'));
+      this.twoFactorError.set(firstApiError(error, 'Failed to start two-factor setup.'));
 
       return false;
     }
@@ -97,7 +97,7 @@ export class SettingsFacade {
     const [qr, secret] = await Promise.all([twoFactorQrCode(), twoFactorSecretKey()]);
 
     this.qrCodeSvg.set(qr.data?.data.svg ?? null);
-    this.secretKey.set((secret.data?.data.secretKey as string | undefined) ?? null);
+    this.secretKey.set(secret.data?.data.secretKey ?? null);
 
     return true;
   }
@@ -105,10 +105,10 @@ export class SettingsFacade {
   async confirmEnrollment(code: string): Promise<boolean> {
     this.twoFactorError.set(null);
 
-    const { error } = await twoFactorConfirm({ body: { code } as never });
+    const { error } = await twoFactorConfirm({ body: { code } });
 
     if (error) {
-      this.twoFactorError.set(firstFieldError(error, 'That code is invalid or has expired.'));
+      this.twoFactorError.set(firstApiError(error, 'That code is invalid or has expired.'));
 
       return false;
     }
@@ -117,7 +117,7 @@ export class SettingsFacade {
     this.secretKey.set(null);
 
     const { data } = await twoFactorRecoveryCodesIndex();
-    this.recoveryCodes.set((data?.data as string[] | undefined) ?? []);
+    this.recoveryCodes.set(data?.data ?? []);
 
     return true;
   }
@@ -125,13 +125,13 @@ export class SettingsFacade {
   async viewRecoveryCodes(): Promise<void> {
     const { data } = await twoFactorRecoveryCodesIndex();
 
-    this.recoveryCodes.set((data?.data as string[] | undefined) ?? []);
+    this.recoveryCodes.set(data?.data ?? []);
   }
 
   async regenerateRecoveryCodes(): Promise<void> {
     const { data } = await twoFactorRecoveryCodesStore();
 
-    this.recoveryCodes.set((data?.data as string[] | undefined) ?? []);
+    this.recoveryCodes.set(data?.data ?? []);
   }
 
   async disableTwoFactor(): Promise<string | null> {
@@ -140,7 +140,7 @@ export class SettingsFacade {
     const { error } = await twoFactorDisable();
 
     if (error) {
-      const message = firstFieldError(error, 'Failed to disable two-factor authentication.');
+      const message = firstApiError(error, 'Failed to disable two-factor authentication.');
       this.twoFactorError.set(message);
 
       return message;

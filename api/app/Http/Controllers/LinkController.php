@@ -10,6 +10,7 @@ use App\JsonApi\V1\Links\LinkRequest;
 use App\Models\Link;
 use App\Models\Program;
 use Dedoc\Scramble\Attributes\BodyParameter;
+use Dedoc\Scramble\Attributes\QueryParameter;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Response;
 use LaravelJsonApi\Contracts\Routing\Route;
@@ -35,6 +36,12 @@ final class LinkController
     /**
      * @response array{data: list<array{type: string, id: string, attributes: array{programId: int, destinationUrl: string, token: string, redirectUrl: string, status: string, personalizationStrategy: string|null, createdAt: string, updatedAt: string}, links: array{self: string}}>, links: array{first: string, last: string, prev: string|null, next: string|null}, meta: array{page: array{currentPage: int, from: int|null, lastPage: int, perPage: int, to: int|null, total: int}}, jsonapi: array{version: string}}
      */
+    #[QueryParameter(
+        name: 'filter[programId]',
+        description: 'Only return links belonging to this program.',
+        required: false,
+        type: 'string',
+    )]
     public function index(Route $route, StoreContract $store): Responsable|Response
     {
         return $this->packageIndex($route, $store);

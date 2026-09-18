@@ -4,12 +4,24 @@ import { provideRouter, Router } from '@angular/router';
 import { SessionService } from '../../core/session';
 import { LoginPage } from './login-page';
 
+const membership = { account: { id: 7, name: 'Acme', slug: 'acme' }, role: 'owner', permissions: [] };
+
+/** Memberships start empty and are filled by a successful call, as the real service's `load()` does. */
 class FakeSession {
   readonly twoFactorPending = signal(false);
-  readonly memberships = signal([{ account: { id: 7, name: 'Acme', slug: 'acme' }, role: 'owner', permissions: [] }]);
+  readonly memberships = signal<(typeof membership)[]>([]);
 
-  login = vi.fn(async () => true);
-  twoFactorChallenge = vi.fn(async () => true);
+  login = vi.fn(async () => {
+    this.memberships.set([membership]);
+
+    return true;
+  });
+
+  twoFactorChallenge = vi.fn(async () => {
+    this.memberships.set([membership]);
+
+    return true;
+  });
 }
 
 describe('LoginPage', () => {
@@ -50,6 +62,14 @@ describe('LoginPage', () => {
     await submitForm();
 
     expect(session.login).toHaveBeenCalledWith('ada@example.test', 'secret');
+    expect(navigate).toHaveBeenCalledWith(['/accounts', 7, 'programs']);
+  });
+
+  it('skips the form entirely when a session already exists', () => {
+    session.memberships.set([membership]);
+
+    TestBed.createComponent(LoginPage).detectChanges();
+
     expect(navigate).toHaveBeenCalledWith(['/accounts', 7, 'programs']);
   });
 

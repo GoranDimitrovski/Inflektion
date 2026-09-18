@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { SessionService } from '../../core/session';
 import { MembersFacade } from './members.facade';
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -24,7 +25,9 @@ describe('MembersFacade', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [MembersFacade] });
+    TestBed.configureTestingModule({
+      providers: [MembersFacade, { provide: SessionService, useValue: { requireAccountId: () => 5 } }],
+    });
     fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
   });
@@ -40,7 +43,7 @@ describe('MembersFacade', () => {
         .mockResolvedValueOnce(jsonResponse({ data: [invitation] }));
 
       const facade = TestBed.inject(MembersFacade);
-      await facade.load(5);
+      await facade.load();
 
       expect(facade.memberships()).toEqual([membership]);
       expect(facade.invitations()).toEqual([invitation]);
@@ -53,7 +56,7 @@ describe('MembersFacade', () => {
         .mockResolvedValueOnce(jsonResponse({ data: [] }));
 
       const facade = TestBed.inject(MembersFacade);
-      await facade.load(5);
+      await facade.load();
 
       expect(facade.error()).toBe('Account not found.');
     });
@@ -64,7 +67,7 @@ describe('MembersFacade', () => {
       fetchMock.mockResolvedValueOnce(jsonResponse({ data: invitation }));
 
       const facade = TestBed.inject(MembersFacade);
-      const result = await facade.invite(5, 'grace@example.test', 'member');
+      const result = await facade.invite('grace@example.test', 'member');
 
       expect(result).toBeNull();
       expect(facade.invitations()).toEqual([invitation]);
@@ -74,7 +77,7 @@ describe('MembersFacade', () => {
       fetchMock.mockResolvedValueOnce(jsonResponse({ errors: [{ detail: 'Already invited.' }] }, 422));
 
       const facade = TestBed.inject(MembersFacade);
-      const result = await facade.invite(5, 'grace@example.test', 'member');
+      const result = await facade.invite('grace@example.test', 'member');
 
       expect(result).toBe('Already invited.');
       expect(facade.invitations()).toEqual([]);
@@ -88,9 +91,9 @@ describe('MembersFacade', () => {
         .mockResolvedValueOnce(new Response(null, { status: 204 }));
 
       const facade = TestBed.inject(MembersFacade);
-      await facade.invite(5, 'grace@example.test', 'member');
+      await facade.invite('grace@example.test', 'member');
 
-      expect(await facade.revokeInvitation(5, invitation.id)).toBe(true);
+      expect(await facade.revokeInvitation(invitation.id)).toBe(true);
       expect(facade.invitations()).toEqual([]);
     });
 
@@ -98,7 +101,7 @@ describe('MembersFacade', () => {
       fetchMock.mockResolvedValueOnce(jsonResponse({}, 500));
 
       const facade = TestBed.inject(MembersFacade);
-      expect(await facade.revokeInvitation(5, invitation.id)).toBe(false);
+      expect(await facade.revokeInvitation(invitation.id)).toBe(false);
     });
   });
 
@@ -111,8 +114,8 @@ describe('MembersFacade', () => {
         .mockResolvedValueOnce(jsonResponse({ data: updated }));
 
       const facade = TestBed.inject(MembersFacade);
-      await facade.load(5);
-      const result = await facade.changeRole(5, membership.id, 'admin');
+      await facade.load();
+      const result = await facade.changeRole(membership.id, 'admin');
 
       expect(result).toBeNull();
       expect(facade.memberships()).toEqual([updated]);
@@ -122,7 +125,7 @@ describe('MembersFacade', () => {
       fetchMock.mockResolvedValueOnce(jsonResponse({ errors: [{ detail: 'Cannot demote the last owner.' }] }, 422));
 
       const facade = TestBed.inject(MembersFacade);
-      const result = await facade.changeRole(5, membership.id, 'member');
+      const result = await facade.changeRole(membership.id, 'member');
 
       expect(result).toBe('Cannot demote the last owner.');
     });
@@ -136,8 +139,8 @@ describe('MembersFacade', () => {
         .mockResolvedValueOnce(new Response(null, { status: 204 }));
 
       const facade = TestBed.inject(MembersFacade);
-      await facade.load(5);
-      const result = await facade.revokeMembership(5, membership.id);
+      await facade.load();
+      const result = await facade.revokeMembership(membership.id);
 
       expect(result).toBeNull();
       expect(facade.memberships()).toEqual([]);
@@ -147,7 +150,7 @@ describe('MembersFacade', () => {
       fetchMock.mockResolvedValueOnce(jsonResponse({ errors: [{ detail: 'Cannot remove the last owner.' }] }, 422));
 
       const facade = TestBed.inject(MembersFacade);
-      const result = await facade.revokeMembership(5, membership.id);
+      const result = await facade.revokeMembership(membership.id);
 
       expect(result).toBe('Cannot remove the last owner.');
     });

@@ -1,12 +1,12 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { v1LinksIndex, v1LinksStore, v1LinksUpdate, v1ProgramsIndex } from '../../api/sdk.gen';
 import type { V1LinksIndexResponses, V1LinksStoreData } from '../../api/types.gen';
+import { SessionService } from '../../core/session';
 import { ProgramResource } from '../programs/programs.facade';
 import { firstApiError } from '../../shared/api-error';
 
 export type LinkResource = V1LinksIndexResponses[200]['data'][number];
 export type CreateLinkAttributes = V1LinksStoreData['body']['data']['attributes'];
-
 
 @Injectable()
 export class LinksFacade {
@@ -15,20 +15,27 @@ export class LinksFacade {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  async loadPrograms(accountId: number): Promise<void> {
-    const { data } = await v1ProgramsIndex({ path: { account: String(accountId) } });
+  private readonly session = inject(SessionService);
+
+  /** Route-scoped: the `accounts/:accountId` guard has already resolved the account these calls belong to. */
+  private account(): string {
+    return String(this.session.requireAccountId());
+  }
+
+  async loadPrograms(): Promise<void> {
+    const { data } = await v1ProgramsIndex({ path: { account: this.account() } });
 
     this.programs.set(data?.data ?? []);
   }
 
-  async loadLinks(accountId: number, programId: number): Promise<void> {
+  async loadLinks(programId: number): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
 
     const { data, error } = await v1LinksIndex({
-      path: { account: String(accountId) },
-      query: { filter: { programId: String(programId) } },
-    } as never);
+      path: { account: this.account() },
+      query: { 'filter[programId]': String(programId) },
+    });
 
     if (error) {
       this.error.set(firstApiError(error, 'Failed to load links.'));
@@ -39,9 +46,9 @@ export class LinksFacade {
     this.loading.set(false);
   }
 
-  async create(accountId: number, attributes: CreateLinkAttributes): Promise<string | null> {
+  async create(attributes: CreateLinkAttributes): Promise<string | null> {
     const { data, error } = await v1LinksStore({
-      path: { account: String(accountId) },
+      path: { account: this.account() },
       body: { data: { type: 'links', attributes } },
     });
 
@@ -56,9 +63,9 @@ export class LinksFacade {
     return null;
   }
 
-  async updateStatus(accountId: number, linkId: string, status: string): Promise<void> {
+  async updateStatus(linkId: string, status: string): Promise<void> {
     const { data, error } = await v1LinksUpdate({
-      path: { account: String(accountId), link: linkId },
+      path: { account: this.account(), link: linkId },
       body: { data: { type: 'links', id: linkId, attributes: { status } } },
     });
 

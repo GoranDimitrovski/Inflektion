@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { SessionService } from '../../core/session';
 import { LinksFacade } from './links.facade';
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -29,7 +30,9 @@ describe('LinksFacade', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [LinksFacade] });
+    TestBed.configureTestingModule({
+      providers: [LinksFacade, { provide: SessionService, useValue: { requireAccountId: () => 5 } }],
+    });
     fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
   });
@@ -42,7 +45,7 @@ describe('LinksFacade', () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ data: [program] }));
 
     const facade = TestBed.inject(LinksFacade);
-    await facade.loadPrograms(5);
+    await facade.loadPrograms();
 
     expect(facade.programs()).toEqual([program]);
   });
@@ -51,7 +54,7 @@ describe('LinksFacade', () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ data: [link] }));
 
     const facade = TestBed.inject(LinksFacade);
-    await facade.loadLinks(5, 1);
+    await facade.loadLinks(1);
 
     expect(facade.links()).toEqual([link]);
     expect(facade.error()).toBeNull();
@@ -63,7 +66,7 @@ describe('LinksFacade', () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ errors: [{ detail: 'Account not found.' }] }, 404));
 
     const facade = TestBed.inject(LinksFacade);
-    await facade.loadLinks(5, 1);
+    await facade.loadLinks(1);
 
     expect(facade.error()).toBe('Account not found.');
   });
@@ -72,7 +75,7 @@ describe('LinksFacade', () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ data: link }));
 
     const facade = TestBed.inject(LinksFacade);
-    const result = await facade.create(5, { programId: 1, destinationUrl: 'https://example.test/landing' });
+    const result = await facade.create({ programId: 1, destinationUrl: 'https://example.test/landing' });
 
     expect(result).toBeNull();
     expect(facade.links()).toEqual([link]);
@@ -82,7 +85,7 @@ describe('LinksFacade', () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ errors: [{ detail: 'The destination URL is invalid.' }] }, 422));
 
     const facade = TestBed.inject(LinksFacade);
-    const result = await facade.create(5, { programId: 1, destinationUrl: 'not-a-url' });
+    const result = await facade.create({ programId: 1, destinationUrl: 'not-a-url' });
 
     expect(result).toBe('The destination URL is invalid.');
     expect(facade.links()).toEqual([]);
@@ -95,8 +98,8 @@ describe('LinksFacade', () => {
       .mockResolvedValueOnce(jsonResponse({ data: updated }));
 
     const facade = TestBed.inject(LinksFacade);
-    await facade.create(5, { programId: 1, destinationUrl: 'https://example.test/landing' });
-    await facade.updateStatus(5, link.id, 'paused');
+    await facade.create({ programId: 1, destinationUrl: 'https://example.test/landing' });
+    await facade.updateStatus(link.id, 'paused');
 
     expect(facade.links()).toEqual([updated]);
   });

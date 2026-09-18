@@ -51,7 +51,7 @@ export class SettingsPage implements OnInit {
     // Any member can view/create/revoke their own API tokens (ApiTokenPolicy
     // allows all of viewAny/create; delete is scoped server-side to tokens
     // the caller owns), so this isn't gated behind a permission check.
-    void this.facade.loadApiTokens(this.session.requireAccountId());
+    void this.facade.loadApiTokens();
   }
 
   /** An issued token's abilities are capped to the issuer's own role permissions — see IssueApiToken. */
@@ -105,7 +105,7 @@ export class SettingsPage implements OnInit {
 
     await submit(this.tokenForm, async () => {
       const abilities = this.availableAbilities().filter((ability) => this.selectedAbilities()[ability]);
-      const result = await this.facade.createApiToken(this.session.requireAccountId(), this.tokenModel().name, abilities);
+      const result = await this.facade.createApiToken(this.tokenModel().name, abilities);
 
       if ('error' in result) {
         this.tokenCreateError.set(result.error);
@@ -123,7 +123,7 @@ export class SettingsPage implements OnInit {
   }
 
   protected async onRevokeToken(token: ApiTokenResource): Promise<void> {
-    await this.facade.revokeApiToken(this.session.requireAccountId(), token.id);
+    await this.facade.revokeApiToken(token.id);
   }
 
 }

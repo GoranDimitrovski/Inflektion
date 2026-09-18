@@ -39,22 +39,17 @@
                                         "properties": {
                                             "name": {
                                                 "type": "string",
-                                                "maxLength": 255
+                                                "description": "Only when accepting as a new user."
                                             },
                                             "password": {
                                                 "type": "string",
-                                                "minLength": 8
+                                                "description": "Only when accepting as a new user."
                                             },
                                             "password_confirmation": {
                                                 "type": "string",
-                                                "minLength": 8
+                                                "description": "Only when accepting as a new user."
                                             }
-                                        },
-                                        "required": [
-                                            "name",
-                                            "password",
-                                            "password_confirmation"
-                                        ]
+                                        }
                                     }
                                 ]
                             }
@@ -554,9 +549,30 @@
                 "tags": [
                     "ConfirmedTwoFactorAuthentication"
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "code": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "code"
+                                ]
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "204": {
                         "description": "No content"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -1076,6 +1092,14 @@
                         "name": "account",
                         "in": "path",
                         "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[programId]",
+                        "in": "query",
+                        "description": "Only return links belonging to this program.",
                         "schema": {
                             "type": "string"
                         }
@@ -2759,35 +2783,17 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "anyOf": [
-                                        {
-                                            "type": "object",
-                                            "properties": {
-                                                "data": {
-                                                    "type": "array",
-                                                    "items": {}
-                                                }
-                                            },
-                                            "required": [
-                                                "data"
-                                            ]
-                                        },
-                                        {
-                                            "type": "object",
-                                            "properties": {
-                                                "data": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "string"
-                                                    },
-                                                    "minItems": 0,
-                                                    "maxItems": 0
-                                                }
-                                            },
-                                            "required": [
-                                                "data"
-                                            ]
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
                                         }
+                                    },
+                                    "required": [
+                                        "data"
                                     ]
                                 }
                             }
@@ -2813,7 +2819,9 @@
                                     "properties": {
                                         "data": {
                                             "type": "array",
-                                            "items": {}
+                                            "items": {
+                                                "type": "string"
+                                            }
                                         }
                                     },
                                     "required": [
@@ -2846,7 +2854,9 @@
                                         "data": {
                                             "type": "object",
                                             "properties": {
-                                                "secretKey": {}
+                                                "secretKey": {
+                                                    "type": "string"
+                                                }
                                             },
                                             "required": [
                                                 "secretKey"
